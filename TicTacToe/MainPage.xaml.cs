@@ -277,6 +277,7 @@ namespace TicTacToe {
             CPUTurn("O");
 
             if (CheckForWinner("O")) {
+                // ?
                 //footerLabel.Text = "Sorry, you lose!";
             }
 
