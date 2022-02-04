@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Drawing;
 using Xamarin.Forms;
 
 namespace TicTacToe {
@@ -16,6 +17,7 @@ namespace TicTacToe {
 		public int wins = 0;
 		public int losses = 0;
 		public int draws = 0;
+		public bool titleScreen = true;
 		public bool loop = true;
 		public Random rnd = new Random();
 		public List<List<int>> winPatterns = new List<List<int>>() {
@@ -33,8 +35,70 @@ namespace TicTacToe {
 			// Initialize system.
 			InitializeComponent();
 
+			// Initialize the title screen.
+			InitializeTitle();
+
 			// Initialize the gameboard.
-			InitializeBoard();
+			//InitializeBoard();
+		}
+
+		//--------------------------------------------------------------------------------
+		// Initialize the title screen.
+		//--------------------------------------------------------------------------------
+		public void InitializeTitle() {
+			Label playLabel = new Label();
+			Button playButton = new Button();
+			Label quitLabel = new Label();
+			Button quitButton = new Button();
+
+			// Create a new stack layout.
+			var stackLayout = new StackLayout { Padding = 5 };
+
+			// Load title image.
+			Image image = new Image { Source = "tic-tac-toe.png" };
+			//Image image = new Image();
+			image.Source = ImageSource.FromFile("tic-tac-toe.png");
+			image.Aspect = Aspect.AspectFill;
+			stackLayout.Children.Add(image);
+
+			// Create title grid.
+			Grid topGrid = new Grid {
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				RowSpacing = 5,
+				ColumnSpacing = 5,
+				RowDefinitions = {
+					//new RowDefinition(),
+					new RowDefinition()
+				},
+				ColumnDefinitions = {
+					new ColumnDefinition(),
+					new ColumnDefinition()
+				}
+			};
+
+			// Add menu buttons.
+			topGrid.Children.Add(playLabel, 0, 0);
+			playLabel.Text = "Play";
+			playLabel.FontSize = 64;
+			playLabel.HorizontalOptions = LayoutOptions.Center;
+			playLabel.VerticalOptions = LayoutOptions.Center;
+			topGrid.Children.Add(playButton, 0, 0);
+			playButton.IsEnabled = true;
+			playButton.Clicked += new EventHandler(ButtonClick);
+
+			topGrid.Children.Add(quitLabel, 1, 0);
+			quitLabel.Text = "Quit";
+			quitLabel.FontSize = 64;
+			quitLabel.HorizontalOptions = LayoutOptions.Center;
+			quitLabel.VerticalOptions = LayoutOptions.Center;
+			topGrid.Children.Add(quitButton, 1, 0);
+			quitButton.IsEnabled = true;
+			quitButton.Clicked += new EventHandler(ButtonClick);
+
+			stackLayout.Children.Add(topGrid);
+
+			Content = stackLayout;
 		}
 
 		//--------------------------------------------------------------------------------
@@ -73,7 +137,7 @@ namespace TicTacToe {
 			};
 
 			BoxView boxView = new BoxView {
-				BackgroundColor = Color.FromHex("#2196F3"),
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
 				CornerRadius = 5
 			};
 			Grid.SetColumnSpan(boxView, 3);
@@ -201,7 +265,7 @@ namespace TicTacToe {
 
 			// Create the bottom frame display.
 			Frame bottomFrame = new Frame {
-				BackgroundColor = Color.FromHex("#2196F3"),
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
 				CornerRadius = 5,
 				Content = new Label {
 					HorizontalTextAlignment = TextAlignment.Center,
@@ -224,7 +288,7 @@ namespace TicTacToe {
 			};
 
 			BoxView bottomBoxView = new BoxView {
-				BackgroundColor = Color.FromHex("#2196F3"),
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
 				CornerRadius = 5
 			};
 			bottomGrid.Children.Add(bottomBoxView);
@@ -246,7 +310,7 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		// Handle gameboard clicks here and player control.
 		//--------------------------------------------------------------------------------
-		public void ButtonClick(object sender, EventArgs e) {
+		public async void ButtonClick(object sender, EventArgs e) {
 			Button clickedBut = sender as Button;
 			int elementNumber = -1;
 
@@ -272,6 +336,7 @@ namespace TicTacToe {
 			if (CheckForWinner("X")) {
 				wins += 1;
 				footerLabel.Text = "You win!";
+				await Task.Delay(2000);
 			}
 
 			// Check for draw game.
@@ -378,6 +443,11 @@ namespace TicTacToe {
 			if (CheckForWinner("O") == true) {
 				await Task.Delay(2000);
 				// Code
+			}
+
+			// Check for draw.
+			if (CheckForDraw() == true) {
+				await Task.Delay(2000);
 			}
 
 			// Enable all blank buttons so the player can move again.
