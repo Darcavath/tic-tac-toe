@@ -527,6 +527,14 @@ namespace TicTacToe {
 			if (clickedBut.Equals(playButton)) {
 				gameActive = true;
 				InitializeBoard();
+
+				// Select random first player.
+				int result = rnd.Next(0, 2);
+				if (result == 0) { 
+					// Code
+				} else {
+					CPUTurn("O");
+				}
 			}
 
 
@@ -595,9 +603,8 @@ namespace TicTacToe {
 			}
 
 			// Check for draw game.
-			if (CheckForDraw() == true) {
+			if (gameActive == true && CheckForDraw() == true) {
 				gameActive = false;
-				draws++;
 				// Code here
 			}
 
