@@ -1,24 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Drawing;
+using System.Text.Json;
 using Xamarin.Forms;
+using System.IO;
 
 namespace TicTacToe {
+	public class Score {
+		public DateTime date { get; set; }
+		public int data { get; set; }
+	}
+
+	public enum Difficulty {
+		normal,
+		hard,
+		expert
+	};
+
 	public partial class MainPage : ContentPage {
 		public Label[] positionLabel;
 		public Label[] headerLabel;
 		public Label footerLabel;
 		public Grid gridBoard;
 		public Button[] positionButton;
+		public Label playLabel = new Label();
+		public Button playButton = new Button();
+		public Label quitLabel = new Label();
+		public Button quitButton = new Button();
+		public Label versesLabel = new Label();
+		public Button versesButton = new Button();
+		public Label scoreLabel = new Label();
+		public Button scoreButton = new Button();
+		public Label diffLabel = new Label();
+		public Button diffButton = new Button();
+		public Label returnLabel = new Label();
+		public Button returnButton = new Button();
 		public bool playerTurn = true;
 		public string headerMessage = "";
 		public string footerMessage = "";
+		public bool gameActive = false;
 		public int wins = 0;
 		public int losses = 0;
 		public int draws = 0;
-		public bool titleScreen = true;
+		public bool titleScreen = true; // Necessary?
 		public bool loop = true;
+		public Difficulty difficulty = Difficulty.normal;
+		public string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json");
 		public Random rnd = new Random();
 		public List<List<int>> winPatterns = new List<List<int>>() {
 			new List<int> { 0, 1, 2 },
@@ -29,35 +56,46 @@ namespace TicTacToe {
 			new List<int> { 2, 5, 8 },
 			new List<int> { 0, 4, 8 },
 			new List<int> { 2, 4, 6 }
-			};
+		};
+
+		
+		List<Score> highScore = new List<Score>() {
+			//new Score { date = DateTime.Today, data = 125 },
+			//new Score { date = DateTime.Today, data = 78 }
+		};
+		
 
 		public MainPage() {
 			// Initialize system.
 			InitializeComponent();
 
+			// Initialize.
+			Initialize();
+
 			// Initialize the title screen.
 			InitializeTitle();
+		}
 
-			// Initialize the gameboard.
-			//InitializeBoard();
+		//--------------------------------------------------------------------------------
+		// General initialization.
+		//--------------------------------------------------------------------------------
+		public void Initialize() {
+			string jsonString = File.ReadAllText(fileName);
+			highScore = JsonSerializer.Deserialize<List<Score>>(jsonString);
+			//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
 		}
 
 		//--------------------------------------------------------------------------------
 		// Initialize the title screen.
 		//--------------------------------------------------------------------------------
 		public void InitializeTitle() {
-			Label playLabel = new Label();
-			Button playButton = new Button();
-			Label quitLabel = new Label();
-			Button quitButton = new Button();
-
 			// Create a new stack layout.
 			var stackLayout = new StackLayout { Padding = 5 };
 
 			// Load title image.
 			Image image = new Image { Source = "tic-tac-toe.png" };
 			//Image image = new Image();
-			image.Source = ImageSource.FromFile("tic-tac-toe.png");
+			//image.Source = ImageSource.FromFile("tic-tac-toe.png");
 			image.Aspect = Aspect.AspectFill;
 			stackLayout.Children.Add(image);
 
@@ -68,7 +106,8 @@ namespace TicTacToe {
 				RowSpacing = 5,
 				ColumnSpacing = 5,
 				RowDefinitions = {
-					//new RowDefinition(),
+					new RowDefinition(),
+					new RowDefinition(),
 					new RowDefinition()
 				},
 				ColumnDefinitions = {
@@ -78,26 +117,87 @@ namespace TicTacToe {
 			};
 
 			// Add menu buttons.
+			BoxView playBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5,
+			};
+			topGrid.Children.Add(playBoxView, 0, 0);
+			Grid.SetColumnSpan(playBoxView, 2);
 			topGrid.Children.Add(playLabel, 0, 0);
 			playLabel.Text = "Play";
-			playLabel.FontSize = 64;
+			playLabel.FontSize = 32;
+			Grid.SetColumnSpan(playLabel, 2);
 			playLabel.HorizontalOptions = LayoutOptions.Center;
 			playLabel.VerticalOptions = LayoutOptions.Center;
 			topGrid.Children.Add(playButton, 0, 0);
+			Grid.SetColumnSpan(playButton, 2);
 			playButton.IsEnabled = true;
-			playButton.Clicked += new EventHandler(ButtonClick);
+			playButton.Clicked += new EventHandler(TitleButtonClick);
 
-			topGrid.Children.Add(quitLabel, 1, 0);
+			BoxView diffBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5
+			};
+			topGrid.Children.Add(diffBoxView, 0, 1);
+			topGrid.Children.Add(diffLabel, 0, 1);
+			if (difficulty == 0) {
+				diffLabel.Text = "Normal";
+			} else if (difficulty == (Difficulty)1) {
+				diffLabel.Text = "Hard";
+			} else {
+				diffLabel.Text = "Expert";
+			}
+			diffLabel.FontSize = 32;
+			diffLabel.HorizontalOptions = LayoutOptions.Center;
+			diffLabel.VerticalOptions = LayoutOptions.Center;
+			topGrid.Children.Add(diffButton, 0, 1);
+			diffButton.IsEnabled = true;
+			diffButton.Clicked += new EventHandler(TitleButtonClick);
+
+			BoxView vsBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5
+			};
+			topGrid.Children.Add(vsBoxView, 1, 1);
+			topGrid.Children.Add(versesLabel, 1, 1);
+			versesLabel.Text = "vs CPU";
+			versesLabel.FontSize = 32;
+			versesLabel.HorizontalOptions = LayoutOptions.Center;
+			versesLabel.VerticalOptions = LayoutOptions.Center;
+			topGrid.Children.Add(versesButton, 1, 1);
+			versesButton.IsEnabled = true;
+			versesButton.Clicked += new EventHandler(TitleButtonClick);
+
+			BoxView hsBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5
+			};
+			topGrid.Children.Add(hsBoxView, 0, 2);
+			topGrid.Children.Add(scoreLabel, 0, 2);
+			scoreLabel.Text = "High Scores";
+			scoreLabel.FontSize = 32;
+			scoreLabel.HorizontalTextAlignment = TextAlignment.Center;
+			scoreLabel.HorizontalOptions = LayoutOptions.Center;
+			scoreLabel.VerticalOptions = LayoutOptions.Center;
+			topGrid.Children.Add(scoreButton, 0, 2);
+			scoreButton.IsEnabled = true;
+			scoreButton.Clicked += new EventHandler(HSButtonClick);
+
+			BoxView quitBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5
+			};
+			topGrid.Children.Add(quitBoxView, 1, 2);
+			topGrid.Children.Add(quitLabel, 1, 2);
 			quitLabel.Text = "Quit";
-			quitLabel.FontSize = 64;
+			quitLabel.FontSize = 32;
 			quitLabel.HorizontalOptions = LayoutOptions.Center;
 			quitLabel.VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(quitButton, 1, 0);
+			topGrid.Children.Add(quitButton, 1, 2);
 			quitButton.IsEnabled = true;
-			quitButton.Clicked += new EventHandler(ButtonClick);
+			quitButton.Clicked += new EventHandler(TitleButtonClick);
 
 			stackLayout.Children.Add(topGrid);
-
 			Content = stackLayout;
 		}
 
@@ -299,18 +399,170 @@ namespace TicTacToe {
 			footerLabel.FontSize = 24;
 			footerLabel.HorizontalOptions = LayoutOptions.Center;
 			footerLabel.VerticalOptions = LayoutOptions.Center;
+			bottomGrid.Children.Add(returnButton, 0, 0);
+			returnButton.IsEnabled = false;
+			returnButton.Clicked += new EventHandler(TitleButtonClick);
 
 			stackLayout.Children.Add(bottomGrid);
 
-			Title = "Grid alignment demo";
+			//Title = "Tic-Tac-Toe";
 			//Content = grid;
 			Content = stackLayout;
 		}
 
 		//--------------------------------------------------------------------------------
+		// Initialize high scores.
+		//--------------------------------------------------------------------------------
+		public void InitializeHighScores() {
+			// Test data.
+			
+			
+			//Console.WriteLine($"Path = {Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json")}");
+			//string fileName = "HighScores.json";
+			//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
+			
+			//Console.WriteLine(File.ReadAllText(fileName));
+
+			
+
+			// Create a new stack layout.
+			var stackLayout = new StackLayout { Padding = 5 };
+
+			// Create grid for header.
+			Grid headerGrid = new Grid {
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				RowSpacing = 5,
+				ColumnSpacing = 5,
+				RowDefinitions = {
+					new RowDefinition()
+				},
+				ColumnDefinitions = {
+					new ColumnDefinition()
+				}
+			};
+
+			BoxView headerBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5
+			};
+			headerGrid.Children.Add(headerBoxView, 0, 0);
+
+			Label titleLabel = new Label {
+				Text = "High Scores",
+				FontSize = 32,
+				HorizontalTextAlignment = TextAlignment.Center,
+				VerticalTextAlignment = TextAlignment.Center
+			};
+			headerGrid.Children.Add(titleLabel, 0, 0);
+			stackLayout.Children.Add(headerGrid);
+
+			// Grid for scrollview.
+			Grid scrollGrid = new Grid {
+				//HorizontalOptions = LayoutOptions.FillAndExpand,
+				//VerticalOptions = LayoutOptions.FillAndExpand,
+				RowSpacing = 5,
+				ColumnSpacing = 5,
+				RowDefinitions = {
+					new RowDefinition()
+				},
+				ColumnDefinitions = {
+					new ColumnDefinition()
+				}
+			};
+
+			string jsonString = JsonSerializer.Serialize(highScore);
+			Label contentLabel = new Label {
+				Text = jsonString,// "This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!",
+				FontSize = 32
+			};
+
+			// ** This height should be dynamic. **
+			ScrollView scrollView = new ScrollView {
+				Content = contentLabel,
+				HeightRequest = 400,
+				VerticalOptions = LayoutOptions.FillAndExpand
+			};
+			scrollGrid.Children.Add(scrollView, 0, 0);
+			stackLayout.Children.Add(scrollGrid);
+
+			// Create grid for return button.
+			Grid bottomGrid = new Grid {
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				RowSpacing = 5,
+				ColumnSpacing = 5,
+				RowDefinitions = {
+					new RowDefinition()
+				},
+				ColumnDefinitions = {
+					new ColumnDefinition()
+				}
+			};
+
+			BoxView bottomBoxView = new BoxView {
+				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
+				CornerRadius = 5
+			};
+			bottomGrid.Children.Add(bottomBoxView, 0 , 0);
+			bottomGrid.Children.Add(returnLabel, 0, 0);
+			returnLabel.Text = "Return to menu";
+			returnLabel.FontSize = 32;
+			returnLabel.HorizontalOptions = LayoutOptions.Center;
+			returnLabel.VerticalOptions = LayoutOptions.Center;
+			bottomGrid.Children.Add(returnButton, 0 , 0);
+			returnButton.IsEnabled = true;
+			returnButton.Clicked += new EventHandler(TitleButtonClick);
+
+			stackLayout.Children.Add(bottomGrid);	
+			Content = stackLayout;
+		}
+
+		//--------------------------------------------------------------------------------
+		// Handle title screen clicks here and player control.
+		//--------------------------------------------------------------------------------
+		public void TitleButtonClick(object sender, EventArgs e) {
+			Button clickedBut = sender as Button;
+
+			if (clickedBut.Equals(playButton)) {
+				gameActive = true;
+				InitializeBoard();
+			}
+
+
+			if (clickedBut.Equals(quitButton)) {
+				CloseGame();
+			}
+
+			// 
+			if (clickedBut.Equals(diffButton)) {
+				switch (difficulty) {
+					case 0:
+						difficulty = Difficulty.hard;
+						diffLabel.Text = "Hard";
+						break;
+					case (Difficulty)1:
+						difficulty = Difficulty.expert;
+						diffLabel.Text = "Expert";
+						break;
+					case (Difficulty)2:
+						difficulty = Difficulty.normal;
+						diffLabel.Text = "Normal";
+						break;
+					default:
+						break;
+				}
+			}
+
+			if (clickedBut.Equals(returnButton)) {
+				InitializeTitle();
+			}
+		}
+
+		//--------------------------------------------------------------------------------
 		// Handle gameboard clicks here and player control.
 		//--------------------------------------------------------------------------------
-		public async void ButtonClick(object sender, EventArgs e) {
+		public void ButtonClick(object sender, EventArgs e) {
 			Button clickedBut = sender as Button;
 			int elementNumber = -1;
 
@@ -334,21 +586,42 @@ namespace TicTacToe {
 
 			// Check for player win.
 			if (CheckForWinner("X")) {
+				gameActive = false;
 				wins += 1;
-				footerLabel.Text = "You win!";
-				await Task.Delay(2000);
+				headerLabel[0].Text = $"Player: {wins}";
+				footerLabel.Text = "You win! Click for menu.";
+				returnButton.IsEnabled = true;
+				//await Task.Delay(2000);
 			}
 
 			// Check for draw game.
 			if (CheckForDraw() == true) {
+				gameActive = false;
 				draws++;
+				// Code here
 			}
 
-			// Set control for CPU.
-			playerTurn = false;
+			// Control gameflow if active.
+			if (gameActive == true) {
+				// Set control for CPU.
+				playerTurn = false;
 
-			// Initialize CPU move.
-			CPUTurn("O");
+				// Initialize CPU move.
+				CPUTurn("O");
+			} else {
+				// Code
+			}
+		}
+
+		//--------------------------------------------------------------------------------
+		// Handle gameboard clicks here and player control.
+		//--------------------------------------------------------------------------------
+		public void HSButtonClick(object sender, EventArgs e) {
+			Button clickedBut = sender as Button;
+
+			if (clickedBut.Equals(scoreButton)) {
+				InitializeHighScores();
+			}
 		}
 
 		//--------------------------------------------------------------------------------
@@ -369,62 +642,77 @@ namespace TicTacToe {
 			footerLabel.Text = "Please wait...";
 			await Task.Delay(2000);
 
-			// Win if possible.
-			foreach (List<int> element in winPatterns) {
-				int winningPosition = -1;
-				int ownElement = 0;
-
-				foreach (int elementInt in element) {
-					// Count own elements.
-					if (positionLabel[elementInt].Text == symbol) {
-						ownElement++;
-					}
-					// Select potential move.
-					if (positionLabel[elementInt].Text == "") {
-						winningPosition = elementInt;
-					}
-				}
-				// Make move and return.
-				if (ownElement == 2 && winningPosition != -1) {
-					positionLabel[winningPosition].Text = symbol;
-					positionButton[winningPosition].IsEnabled = false;
-					moved = true;
-					break;
-				}
+			// Move determined by difficulty.
+			int diffNumber = 0;
+			if (difficulty == 0) {
+				diffNumber = 5;
+			} else if (difficulty == (Difficulty)1) {
+				diffNumber = 8;
+			} else if (difficulty == (Difficulty)2) {
+				diffNumber = 10;
 			}
 
-			// Block if no winning move.
-			if (moved == false) {
+			// Get randome number for CPU move.
+			int chance = rnd.Next(1, 11);
+
+			if (chance <= diffNumber) {
+				// Win if possible.
 				foreach (List<int> element in winPatterns) {
-					int blockPosition = -1;
-					int opponentElement = 0;
+					int winningPosition = -1;
+					int ownElement = 0;
 
 					foreach (int elementInt in element) {
-						// Count opponent elements.
-						if (positionLabel[elementInt].Text == opponentSymbol) {
-							opponentElement++;
+						// Count own elements.
+						if (positionLabel[elementInt].Text == symbol) {
+							ownElement++;
 						}
 						// Select potential move.
 						if (positionLabel[elementInt].Text == "") {
-							blockPosition = elementInt;
+							winningPosition = elementInt;
 						}
 					}
 					// Make move and return.
-					if (opponentElement == 2 && blockPosition != -1) {
-						positionLabel[blockPosition].Text = symbol;
-						positionButton[blockPosition].IsEnabled = false;
+					if (ownElement == 2 && winningPosition != -1) {
+						positionLabel[winningPosition].Text = symbol;
+						positionButton[winningPosition].IsEnabled = false;
 						moved = true;
 						break;
 					}
 				}
-			}
 
-			// Take middle position if available.
-			if (moved == false) {
-				if (positionLabel[4].Text == "") {
-					positionLabel[4].Text = symbol;
-					positionButton[4].IsEnabled = false;
-					moved = true;
+				// Block if no winning move.
+				if (moved == false) {
+					foreach (List<int> element in winPatterns) {
+						int blockPosition = -1;
+						int opponentElement = 0;
+
+						foreach (int elementInt in element) {
+							// Count opponent elements.
+							if (positionLabel[elementInt].Text == opponentSymbol) {
+								opponentElement++;
+							}
+							// Select potential move.
+							if (positionLabel[elementInt].Text == "") {
+								blockPosition = elementInt;
+							}
+						}
+						// Make move and return.
+						if (opponentElement == 2 && blockPosition != -1) {
+							positionLabel[blockPosition].Text = symbol;
+							positionButton[blockPosition].IsEnabled = false;
+							moved = true;
+							break;
+						}
+					}
+				}
+
+				// Take middle position if available.
+				if (moved == false) {
+					if (positionLabel[4].Text == "") {
+						positionLabel[4].Text = symbol;
+						positionButton[4].IsEnabled = false;
+						moved = true;
+					}
 				}
 			}
 
@@ -441,6 +729,9 @@ namespace TicTacToe {
 
 			// Check for CPU win.
 			if (CheckForWinner("O") == true) {
+				losses++;
+				headerLabel[2].Text = $"CPU: {losses}";
+				returnButton.IsEnabled = true;
 				await Task.Delay(2000);
 				// Code
 			}
@@ -478,9 +769,9 @@ namespace TicTacToe {
 				// Make move and return.
 				if (ownElement == 3) {
 					if (symbol == "X") {
-						footerLabel.Text = "You Win!";
+						footerLabel.Text = "You Win! Click for menu.";
 					} else {
-						footerLabel.Text = "Sorry, you lose!";
+						footerLabel.Text = "Sorry, you lose! Click for menu.";
 					}
 					return true;
 				}
@@ -503,10 +794,28 @@ namespace TicTacToe {
 			}
 
 			if (count == 0) {
+				draws++;
+				headerLabel[1].Text = $"Draws: {draws}";
+				footerLabel.Text = "It's a draw! Click for menu.";
+				returnButton.IsEnabled = true;
 				return true;
 			} else {
 				return false;
 			}
+		}
+
+		//--------------------------------------------------------------------------------
+		// Close the game. ???
+		//--------------------------------------------------------------------------------
+		public void CloseGame() {
+			DateTime currentDateTime = DateTime.Now;
+			highScore.Add(new Score { date = DateTime.Today, data = wins });
+			string jsonString = JsonSerializer.Serialize(highScore);
+			File.WriteAllText(fileName, jsonString);
+
+			// ** Fix this! **
+			Console.WriteLine("** Exit complete! **");
+			System.Environment.Exit(0);
 		}
 	}
 }
