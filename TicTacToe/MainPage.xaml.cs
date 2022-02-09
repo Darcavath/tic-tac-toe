@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.Json;
-using Xamarin.Forms;
 using System.IO;
+using Xamarin.Forms;
 
 namespace TicTacToe {
 	public class Score {
@@ -35,7 +35,7 @@ namespace TicTacToe {
 		public Button diffButton = new Button();
 		public Label returnLabel = new Label();
 		public Button returnButton = new Button();
-		public bool playerTurn = true;
+		public bool playerTurn = false;
 		public string headerMessage = "";
 		public string footerMessage = "";
 		public bool gameActive = false;
@@ -283,7 +283,7 @@ namespace TicTacToe {
 			positionLabel[0].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[0].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[0], 0, 0);
-			positionButton[0].IsEnabled = true;
+			positionButton[0].IsEnabled = false;
 			positionButton[0].Clicked += new EventHandler(ButtonClick);
 
 			gridBoard.Children.Add(positionLabel[1], 1, 0);
@@ -292,7 +292,7 @@ namespace TicTacToe {
 			positionLabel[1].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[1].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[1], 1, 0);
-			positionButton[1].IsEnabled = true;
+			positionButton[1].IsEnabled = false;
 			positionButton[1].Clicked += new EventHandler(ButtonClick);
 
 			gridBoard.Children.Add(positionLabel[2], 2, 0);
@@ -301,7 +301,7 @@ namespace TicTacToe {
 			positionLabel[2].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[2].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[2], 2, 0);
-			positionButton[2].IsEnabled = true;
+			positionButton[2].IsEnabled = false;
 			positionButton[2].Clicked += new EventHandler(ButtonClick);
 
 			// Row 1
@@ -311,7 +311,7 @@ namespace TicTacToe {
 			positionLabel[3].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[3].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[3], 0, 1);
-			positionButton[3].IsEnabled = true;
+			positionButton[3].IsEnabled = false;
 			positionButton[3].Clicked += new EventHandler(ButtonClick);
 
 			gridBoard.Children.Add(positionLabel[4], 1, 1);
@@ -320,7 +320,7 @@ namespace TicTacToe {
 			positionLabel[4].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[4].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[4], 1, 1);
-			positionButton[4].IsEnabled = true;
+			positionButton[4].IsEnabled = false;
 			positionButton[4].Clicked += new EventHandler(ButtonClick);
 
 			gridBoard.Children.Add(positionLabel[5], 2, 1);
@@ -329,7 +329,7 @@ namespace TicTacToe {
 			positionLabel[5].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[5].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[5], 2, 1);
-			positionButton[5].IsEnabled = true;
+			positionButton[5].IsEnabled = false;
 			positionButton[5].Clicked += new EventHandler(ButtonClick);
 
 			// Row 2
@@ -339,7 +339,7 @@ namespace TicTacToe {
 			positionLabel[6].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[6].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[6], 0, 2);
-			positionButton[6].IsEnabled = true;
+			positionButton[6].IsEnabled = false;
 			positionButton[6].Clicked += new EventHandler(ButtonClick);
 
 			gridBoard.Children.Add(positionLabel[7], 1, 2);
@@ -348,7 +348,7 @@ namespace TicTacToe {
 			positionLabel[7].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[7].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[7], 1, 2);
-			positionButton[7].IsEnabled = true;
+			positionButton[7].IsEnabled = false;
 			positionButton[7].Clicked += new EventHandler(ButtonClick);
 
 			gridBoard.Children.Add(positionLabel[8], 2, 2);
@@ -357,7 +357,7 @@ namespace TicTacToe {
 			positionLabel[8].HorizontalOptions = LayoutOptions.Center;
 			positionLabel[8].VerticalOptions = LayoutOptions.Center;
 			gridBoard.Children.Add(positionButton[8], 2, 2);
-			positionButton[8].IsEnabled = true;
+			positionButton[8].IsEnabled = false;
 			positionButton[8].Clicked += new EventHandler(ButtonClick);
 
 			// Add the grid to the stack.
@@ -416,14 +416,11 @@ namespace TicTacToe {
 		public void InitializeHighScores() {
 			// Test data.
 			
-			
 			//Console.WriteLine($"Path = {Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json")}");
 			//string fileName = "HighScores.json";
 			//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
 			
 			//Console.WriteLine(File.ReadAllText(fileName));
-
-			
 
 			// Create a new stack layout.
 			var stackLayout = new StackLayout { Padding = 5 };
@@ -473,7 +470,7 @@ namespace TicTacToe {
 
 			string jsonString = JsonSerializer.Serialize(highScore);
 			Label contentLabel = new Label {
-				Text = jsonString,// "This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!This is the time for all good men. Apple is the greatest computer company in the word! I love Apple!",
+				Text = jsonString,
 				FontSize = 32
 			};
 
@@ -530,13 +527,19 @@ namespace TicTacToe {
 
 				// Select random first player.
 				int result = rnd.Next(0, 2);
-				if (result == 0) { 
-					// Code
+				if (result == 0) {
+					// Enable all blank buttons so the player can move.
+					for (int i = 0; i < 9; i++) {
+						if (positionButton[i].IsEnabled == false) {
+							positionButton[i].IsEnabled = true;
+						}
+					}
+					playerTurn = true;
 				} else {
+					playerTurn = false;
 					CPUTurn("O");
 				}
 			}
-
 
 			if (clickedBut.Equals(quitButton)) {
 				CloseGame();
@@ -584,6 +587,7 @@ namespace TicTacToe {
 			// Set button's matching label.
 			positionLabel[elementNumber].Text = "X";
 			clickedBut.IsEnabled = false;
+			playerTurn = false;
 
 			// Disable all blank buttons until player can move again.
 			for (int i = 0; i < 9; i++) {
@@ -636,8 +640,8 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public async void CPUTurn(string symbol) {
 			bool moved = false;
-
 			string opponentSymbol;
+
 			// Set opponent symbol.
 			if (symbol == "X") {
 				opponentSymbol = "O";
@@ -659,93 +663,109 @@ namespace TicTacToe {
 				diffNumber = 10;
 			}
 
-			// Get randome number for CPU move.
+			// Get random number for CPU move.
 			int chance = rnd.Next(1, 11);
 
 			if (chance <= diffNumber) {
 				// Win if possible.
-				foreach (List<int> element in winPatterns) {
-					int winningPosition = -1;
-					int ownElement = 0;
-
-					foreach (int elementInt in element) {
-						// Count own elements.
-						if (positionLabel[elementInt].Text == symbol) {
-							ownElement++;
-						}
-						// Select potential move.
-						if (positionLabel[elementInt].Text == "") {
-							winningPosition = elementInt;
-						}
-					}
-					// Make move and return.
-					if (ownElement == 2 && winningPosition != -1) {
-						positionLabel[winningPosition].Text = symbol;
-						positionButton[winningPosition].IsEnabled = false;
-						moved = true;
-						break;
-					}
-				}
-
-				// Block if no winning move.
-				if (moved == false) {
+				if (playerTurn == false) {
 					foreach (List<int> element in winPatterns) {
-						int blockPosition = -1;
-						int opponentElement = 0;
+						int winningPosition = -1;
+						int ownElement = 0;
 
 						foreach (int elementInt in element) {
-							// Count opponent elements.
-							if (positionLabel[elementInt].Text == opponentSymbol) {
-								opponentElement++;
+							// Count own elements.
+							if (positionLabel[elementInt].Text == symbol) {
+								ownElement++;
 							}
 							// Select potential move.
 							if (positionLabel[elementInt].Text == "") {
-								blockPosition = elementInt;
+								winningPosition = elementInt;
 							}
 						}
 						// Make move and return.
-						if (opponentElement == 2 && blockPosition != -1) {
-							positionLabel[blockPosition].Text = symbol;
-							positionButton[blockPosition].IsEnabled = false;
+						if (ownElement == 2 && winningPosition != -1) {
+							positionLabel[winningPosition].Text = symbol;
+							positionButton[winningPosition].IsEnabled = false;
 							moved = true;
 							break;
 						}
 					}
-				}
 
-				// Take middle position if available.
-				if (moved == false) {
-					if (positionLabel[4].Text == "") {
-						positionLabel[4].Text = symbol;
-						positionButton[4].IsEnabled = false;
-						moved = true;
+					// Block if no winning move.
+					if (moved == false) {
+						foreach (List<int> element in winPatterns) {
+							int blockPosition = -1;
+							int opponentElement = 0;
+
+							foreach (int elementInt in element) {
+								// Count opponent elements.
+								if (positionLabel[elementInt].Text == opponentSymbol) {
+									opponentElement++;
+								}
+								// Select potential move.
+								if (positionLabel[elementInt].Text == "") {
+									blockPosition = elementInt;
+								}
+							}
+							// Make move and return.
+							if (opponentElement == 2 && blockPosition != -1) {
+								positionLabel[blockPosition].Text = symbol;
+								positionButton[blockPosition].IsEnabled = false;
+								moved = true;
+								break;
+							}
+						}
+					}
+
+					// Take middle position if available.
+					if (moved == false) {
+						if (positionLabel[4].Text == "") {
+							positionLabel[4].Text = symbol;
+							positionButton[4].IsEnabled = false;
+							moved = true;
+						}
 					}
 				}
-			}
 
-			// Make a random move.
-			if (moved == false) {
-				int rndPosition;
-				do {
-					rndPosition = rnd.Next(0, 9); // returns random integers >= 10 and < 19
-				} while (positionLabel[rndPosition].Text != "");
+				// Make a random move.
+				if (moved == false && playerTurn == false) {
+					int rndPosition;
+					do {
+						rndPosition = rnd.Next(0, 9);
+					} while (positionLabel[rndPosition].Text != "");
 
-				positionLabel[rndPosition].Text = symbol;
-				positionButton[rndPosition].IsEnabled = false;
+					positionLabel[rndPosition].Text = symbol;
+					positionButton[rndPosition].IsEnabled = false;
+					moved = true;
+					playerTurn = true;
+				}
+			} else {
+				// Make a random move.
+				if (moved == false && playerTurn == false) {
+					int rndPosition;
+					do {
+						rndPosition = rnd.Next(0, 9);
+					} while (positionLabel[rndPosition].Text != "");
+
+					positionLabel[rndPosition].Text = symbol;
+					positionButton[rndPosition].IsEnabled = false;
+					moved = true;
+					playerTurn = true;
+				}
 			}
 
 			// Check for CPU win.
 			if (CheckForWinner("O") == true) {
+				gameActive = false;
 				losses++;
 				headerLabel[2].Text = $"CPU: {losses}";
 				returnButton.IsEnabled = true;
-				await Task.Delay(2000);
-				// Code
 			}
 
 			// Check for draw.
-			if (CheckForDraw() == true) {
-				await Task.Delay(2000);
+			if (gameActive == true && CheckForDraw() == true) {
+				gameActive = false;
 			}
 
 			// Enable all blank buttons so the player can move again.
@@ -755,8 +775,10 @@ namespace TicTacToe {
 				}
 			}
 
-			footerLabel.Text = "Please make your move...";
-			playerTurn = true;
+			if (gameActive == true) {
+				footerLabel.Text = "Please make your move...";
+				playerTurn = true;
+			}
 		}
 
 		//--------------------------------------------------------------------------------
@@ -779,6 +801,12 @@ namespace TicTacToe {
 						footerLabel.Text = "You Win! Click for menu.";
 					} else {
 						footerLabel.Text = "Sorry, you lose! Click for menu.";
+					}
+					// Disable all blank buttons.
+					for (int i = 0; i < 9; i++) {
+						if (positionLabel[i].Text == "") {
+							positionButton[i].IsEnabled = false;
+						}
 					}
 					return true;
 				}
