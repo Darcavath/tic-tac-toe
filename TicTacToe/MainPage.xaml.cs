@@ -18,31 +18,13 @@ namespace TicTacToe {
 	};
 
 	public partial class MainPage : ContentPage {
-		public Label[] positionLabel;
-		public Label[] headerLabel;
-		public Label footerLabel;
-		public Grid gridBoard;
-		public Button[] positionButton;
-		public Label playLabel = new Label();
-		public Button playButton = new Button();
-		public Label quitLabel = new Label();
-		public Button quitButton = new Button();
-		public Label versesLabel = new Label();
-		public Button versesButton = new Button();
-		public Label scoreLabel = new Label();
-		public Button scoreButton = new Button();
-		public Label diffLabel = new Label();
-		public Button diffButton = new Button();
-		public Label returnLabel = new Label();
-		public Button returnButton = new Button();
+		Game game = new Game();
+		//TitleScreen titleScreen = new TitleScreen();
+		
 		public bool playerTurn = false;
 		public string headerMessage = "";
 		public string footerMessage = "";
 		public bool gameActive = false;
-		public int wins = 0;
-		public int losses = 0;
-		public int draws = 0;
-		public bool titleScreen = true; // Necessary?
 		public bool loop = true;
 		public Difficulty difficulty = Difficulty.normal;
 		public string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json");
@@ -57,8 +39,8 @@ namespace TicTacToe {
 			new List<int> { 0, 4, 8 },
 			new List<int> { 2, 4, 6 }
 		};
+		//public StackLayout stackLayout = new StackLayout();
 
-		
 		List<Score> highScore = new List<Score>() {
 			//new Score { date = DateTime.Today, data = 125 },
 			//new Score { date = DateTime.Today, data = 78 }
@@ -73,7 +55,9 @@ namespace TicTacToe {
 			Initialize();
 
 			// Initialize the title screen.
-			InitializeTitle();
+			//stackLayout = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
+			//InitializeTitle();
+			Content = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
 		}
 
 		//--------------------------------------------------------------------------------
@@ -88,450 +72,59 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		// Initialize the title screen.
 		//--------------------------------------------------------------------------------
-		public void InitializeTitle() {
-			// Create a new stack layout.
-			var stackLayout = new StackLayout { Padding = 5 };
-
-			// Load title image.
-			Image image = new Image { Source = "tic-tac-toe.png" };
-			//Image image = new Image();
-			//image.Source = ImageSource.FromFile("tic-tac-toe.png");
-			image.Aspect = Aspect.AspectFill;
-			stackLayout.Children.Add(image);
-
-			// Create title grid.
-			Grid topGrid = new Grid {
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				VerticalOptions = LayoutOptions.FillAndExpand,
-				RowSpacing = 5,
-				ColumnSpacing = 5,
-				RowDefinitions = {
-					new RowDefinition(),
-					new RowDefinition(),
-					new RowDefinition()
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition(),
-					new ColumnDefinition()
-				}
-			};
-
-			// Add menu buttons.
-			BoxView playBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5,
-			};
-			topGrid.Children.Add(playBoxView, 0, 0);
-			Grid.SetColumnSpan(playBoxView, 2);
-			topGrid.Children.Add(playLabel, 0, 0);
-			playLabel.Text = "Play";
-			playLabel.FontSize = 32;
-			Grid.SetColumnSpan(playLabel, 2);
-			playLabel.HorizontalOptions = LayoutOptions.Center;
-			playLabel.VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(playButton, 0, 0);
-			Grid.SetColumnSpan(playButton, 2);
-			playButton.IsEnabled = true;
-			playButton.Clicked += new EventHandler(TitleButtonClick);
-
-			BoxView diffBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			topGrid.Children.Add(diffBoxView, 0, 1);
-			topGrid.Children.Add(diffLabel, 0, 1);
-			if (difficulty == 0) {
-				diffLabel.Text = "Normal";
-			} else if (difficulty == (Difficulty)1) {
-				diffLabel.Text = "Hard";
-			} else {
-				diffLabel.Text = "Expert";
-			}
-			diffLabel.FontSize = 32;
-			diffLabel.HorizontalOptions = LayoutOptions.Center;
-			diffLabel.VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(diffButton, 0, 1);
-			diffButton.IsEnabled = true;
-			diffButton.Clicked += new EventHandler(TitleButtonClick);
-
-			BoxView vsBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			topGrid.Children.Add(vsBoxView, 1, 1);
-			topGrid.Children.Add(versesLabel, 1, 1);
-			versesLabel.Text = "vs CPU";
-			versesLabel.FontSize = 32;
-			versesLabel.HorizontalOptions = LayoutOptions.Center;
-			versesLabel.VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(versesButton, 1, 1);
-			versesButton.IsEnabled = true;
-			versesButton.Clicked += new EventHandler(TitleButtonClick);
-
-			BoxView hsBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			topGrid.Children.Add(hsBoxView, 0, 2);
-			topGrid.Children.Add(scoreLabel, 0, 2);
-			scoreLabel.Text = "High Scores";
-			scoreLabel.FontSize = 32;
-			scoreLabel.HorizontalTextAlignment = TextAlignment.Center;
-			scoreLabel.HorizontalOptions = LayoutOptions.Center;
-			scoreLabel.VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(scoreButton, 0, 2);
-			scoreButton.IsEnabled = true;
-			scoreButton.Clicked += new EventHandler(HSButtonClick);
-
-			BoxView quitBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			topGrid.Children.Add(quitBoxView, 1, 2);
-			topGrid.Children.Add(quitLabel, 1, 2);
-			quitLabel.Text = "Quit";
-			quitLabel.FontSize = 32;
-			quitLabel.HorizontalOptions = LayoutOptions.Center;
-			quitLabel.VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(quitButton, 1, 2);
-			quitButton.IsEnabled = true;
-			quitButton.Clicked += new EventHandler(TitleButtonClick);
-
-			stackLayout.Children.Add(topGrid);
-			Content = stackLayout;
-		}
-
-		//--------------------------------------------------------------------------------
-		// Initialize and setup the gameboard.
-		//--------------------------------------------------------------------------------
-		public void InitializeBoard() {
-			positionLabel = new Label[9];
-			positionButton = new Button[9];
-			headerLabel = new Label[3];
-			for (int i = 0; i < 9; i++) {
-				positionLabel[i] = new Label();
-			}
-			for (int i = 0; i < 9; i++) {
-				positionButton[i] = new Button();
-			}
-			for (int i = 0; i < 3; i++) {
-				headerLabel[i] = new Label();
-			}
-
-			// Create a new stack layout.
-			var stackLayout = new StackLayout { Padding = 5 };
-
-			// Create top grid.
-			Grid topGrid = new Grid {
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				RowSpacing = 5,
-				ColumnSpacing = 5,
-				RowDefinitions = {
-					new RowDefinition(),
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition(),
-					new ColumnDefinition(),
-					new ColumnDefinition()
-				}
-			};
-
-			BoxView boxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			Grid.SetColumnSpan(boxView, 3);
-			topGrid.Children.Add(boxView);
-
-			// Setup header labels.
-			topGrid.Children.Add(headerLabel[0], 0, 0);
-			headerLabel[0].Text = $"Player: {wins}";
-			headerLabel[0].FontSize = 24;
-			headerLabel[0].HorizontalOptions = LayoutOptions.Start;
-			headerLabel[0].VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(headerLabel[1], 1, 0);
-			headerLabel[1].Text = $"Draw: {draws}";
-			headerLabel[1].FontSize = 24;
-			headerLabel[1].HorizontalOptions = LayoutOptions.Center;
-			headerLabel[1].VerticalOptions = LayoutOptions.Center;
-			topGrid.Children.Add(headerLabel[2], 2, 0);
-			headerLabel[2].Text = $"CPU: {losses}";
-			headerLabel[2].FontSize = 24;
-			headerLabel[2].HorizontalOptions = LayoutOptions.End;
-			headerLabel[2].VerticalOptions = LayoutOptions.Center;
-
-			stackLayout.Children.Add(topGrid);
-
-			// Create a grid for the gameboard.
-			gridBoard = new Grid();
-			gridBoard.HorizontalOptions = LayoutOptions.FillAndExpand;
-			gridBoard.VerticalOptions = LayoutOptions.FillAndExpand;
-			gridBoard.RowSpacing = 5;
-			gridBoard.ColumnSpacing = 5;
-			gridBoard.IsEnabled = false;
-			gridBoard.RowDefinitions.Add(new RowDefinition());
-			gridBoard.RowDefinitions.Add(new RowDefinition());
-			gridBoard.RowDefinitions.Add(new RowDefinition());
-			gridBoard.ColumnDefinitions.Add(new ColumnDefinition());
-			gridBoard.ColumnDefinitions.Add(new ColumnDefinition());
-			gridBoard.ColumnDefinitions.Add(new ColumnDefinition());
-
-			// Row 0
-			gridBoard.Children.Add(positionLabel[0], 0, 0);
-			positionLabel[0].Text = "";
-			positionLabel[0].FontSize = 96;
-			positionLabel[0].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[0].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[0], 0, 0);
-			positionButton[0].IsEnabled = false;
-			positionButton[0].Clicked += new EventHandler(ButtonClick);
-
-			gridBoard.Children.Add(positionLabel[1], 1, 0);
-			positionLabel[1].Text = "";
-			positionLabel[1].FontSize = 96;
-			positionLabel[1].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[1].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[1], 1, 0);
-			positionButton[1].IsEnabled = false;
-			positionButton[1].Clicked += new EventHandler(ButtonClick);
-
-			gridBoard.Children.Add(positionLabel[2], 2, 0);
-			positionLabel[2].Text = "";
-			positionLabel[2].FontSize = 96;
-			positionLabel[2].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[2].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[2], 2, 0);
-			positionButton[2].IsEnabled = false;
-			positionButton[2].Clicked += new EventHandler(ButtonClick);
-
-			// Row 1
-			gridBoard.Children.Add(positionLabel[3], 0, 1);
-			positionLabel[3].Text = "";
-			positionLabel[3].FontSize = 96;
-			positionLabel[3].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[3].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[3], 0, 1);
-			positionButton[3].IsEnabled = false;
-			positionButton[3].Clicked += new EventHandler(ButtonClick);
-
-			gridBoard.Children.Add(positionLabel[4], 1, 1);
-			positionLabel[4].Text = "";
-			positionLabel[4].FontSize = 96;
-			positionLabel[4].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[4].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[4], 1, 1);
-			positionButton[4].IsEnabled = false;
-			positionButton[4].Clicked += new EventHandler(ButtonClick);
-
-			gridBoard.Children.Add(positionLabel[5], 2, 1);
-			positionLabel[5].Text = "";
-			positionLabel[5].FontSize = 96;
-			positionLabel[5].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[5].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[5], 2, 1);
-			positionButton[5].IsEnabled = false;
-			positionButton[5].Clicked += new EventHandler(ButtonClick);
-
-			// Row 2
-			gridBoard.Children.Add(positionLabel[6], 0, 2);
-			positionLabel[6].Text = "";
-			positionLabel[6].FontSize = 96;
-			positionLabel[6].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[6].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[6], 0, 2);
-			positionButton[6].IsEnabled = false;
-			positionButton[6].Clicked += new EventHandler(ButtonClick);
-
-			gridBoard.Children.Add(positionLabel[7], 1, 2);
-			positionLabel[7].Text = "";
-			positionLabel[7].FontSize = 96;
-			positionLabel[7].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[7].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[7], 1, 2);
-			positionButton[7].IsEnabled = false;
-			positionButton[7].Clicked += new EventHandler(ButtonClick);
-
-			gridBoard.Children.Add(positionLabel[8], 2, 2);
-			positionLabel[8].Text = "";
-			positionLabel[8].FontSize = 96;
-			positionLabel[8].HorizontalOptions = LayoutOptions.Center;
-			positionLabel[8].VerticalOptions = LayoutOptions.Center;
-			gridBoard.Children.Add(positionButton[8], 2, 2);
-			positionButton[8].IsEnabled = false;
-			positionButton[8].Clicked += new EventHandler(ButtonClick);
-
-			// Add the grid to the stack.
-			stackLayout.Children.Add(gridBoard);
-
-			// Create the bottom frame display.
-			Frame bottomFrame = new Frame {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5,
-				Content = new Label {
-					HorizontalTextAlignment = TextAlignment.Center,
-					FontSize = 24,
-					Text = "Information here...",
-				}
-			};
-
-			// Create top grid.
-			Grid bottomGrid = new Grid {
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				RowSpacing = 5,
-				ColumnSpacing = 5,
-				RowDefinitions = {
-					new RowDefinition()
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition()
-				}
-			};
-
-			BoxView bottomBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			bottomGrid.Children.Add(bottomBoxView);
-
-			footerLabel = new Label();
-			bottomGrid.Children.Add(footerLabel, 0, 0);
-			footerLabel.Text = "Please make your move...";
-			footerLabel.FontSize = 24;
-			footerLabel.HorizontalOptions = LayoutOptions.Center;
-			footerLabel.VerticalOptions = LayoutOptions.Center;
-			bottomGrid.Children.Add(returnButton, 0, 0);
-			returnButton.IsEnabled = false;
-			returnButton.Clicked += new EventHandler(TitleButtonClick);
-
-			stackLayout.Children.Add(bottomGrid);
-
-			//Title = "Tic-Tac-Toe";
-			//Content = grid;
-			Content = stackLayout;
-		}
-
-		//--------------------------------------------------------------------------------
-		// Initialize high scores.
-		//--------------------------------------------------------------------------------
-		public void InitializeHighScores() {
-			// Test data.
+		//public void InitializeTitle() {
 			
-			//Console.WriteLine($"Path = {Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json")}");
-			//string fileName = "HighScores.json";
-			//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
+		//}
+
+		////--------------------------------------------------------------------------------
+		//// Initialize and setup the gameboard.
+		////--------------------------------------------------------------------------------
+		//public void InitializeBoard() {
 			
-			//Console.WriteLine(File.ReadAllText(fileName));
+		//}
 
-			// Create a new stack layout.
-			var stackLayout = new StackLayout { Padding = 5 };
+		////--------------------------------------------------------------------------------
+		//// Initialize high scores.
+		////--------------------------------------------------------------------------------
+		//public void InitializeHighScores() {
+		//	// Test data.
+			
+		//	//Console.WriteLine($"Path = {Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json")}");
+		//	//string fileName = "HighScores.json";
+		//	//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
+			
+		//	//Console.WriteLine(File.ReadAllText(fileName));
 
-			// Create grid for header.
-			Grid headerGrid = new Grid {
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				VerticalOptions = LayoutOptions.FillAndExpand,
-				RowSpacing = 5,
-				ColumnSpacing = 5,
-				RowDefinitions = {
-					new RowDefinition()
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition()
-				}
-			};
-
-			BoxView headerBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			headerGrid.Children.Add(headerBoxView, 0, 0);
-
-			Label titleLabel = new Label {
-				Text = "High Scores",
-				FontSize = 32,
-				HorizontalTextAlignment = TextAlignment.Center,
-				VerticalTextAlignment = TextAlignment.Center
-			};
-			headerGrid.Children.Add(titleLabel, 0, 0);
-			stackLayout.Children.Add(headerGrid);
-
-			// Grid for scrollview.
-			Grid scrollGrid = new Grid {
-				//HorizontalOptions = LayoutOptions.FillAndExpand,
-				//VerticalOptions = LayoutOptions.FillAndExpand,
-				RowSpacing = 5,
-				ColumnSpacing = 5,
-				RowDefinitions = {
-					new RowDefinition()
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition()
-				}
-			};
-
-			string jsonString = JsonSerializer.Serialize(highScore);
-			Label contentLabel = new Label {
-				Text = jsonString,
-				FontSize = 32
-			};
-
-			// ** This height should be dynamic. **
-			ScrollView scrollView = new ScrollView {
-				Content = contentLabel,
-				HeightRequest = 400,
-				VerticalOptions = LayoutOptions.FillAndExpand
-			};
-			scrollGrid.Children.Add(scrollView, 0, 0);
-			stackLayout.Children.Add(scrollGrid);
-
-			// Create grid for return button.
-			Grid bottomGrid = new Grid {
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				VerticalOptions = LayoutOptions.FillAndExpand,
-				RowSpacing = 5,
-				ColumnSpacing = 5,
-				RowDefinitions = {
-					new RowDefinition()
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition()
-				}
-			};
-
-			BoxView bottomBoxView = new BoxView {
-				BackgroundColor = Xamarin.Forms.Color.FromHex("#2196F3"),
-				CornerRadius = 5
-			};
-			bottomGrid.Children.Add(bottomBoxView, 0 , 0);
-			bottomGrid.Children.Add(returnLabel, 0, 0);
-			returnLabel.Text = "Return to menu";
-			returnLabel.FontSize = 32;
-			returnLabel.HorizontalOptions = LayoutOptions.Center;
-			returnLabel.VerticalOptions = LayoutOptions.Center;
-			bottomGrid.Children.Add(returnButton, 0 , 0);
-			returnButton.IsEnabled = true;
-			returnButton.Clicked += new EventHandler(TitleButtonClick);
-
-			stackLayout.Children.Add(bottomGrid);	
-			Content = stackLayout;
-		}
+		//}
 
 		//--------------------------------------------------------------------------------
 		// Handle title screen clicks here and player control.
 		//--------------------------------------------------------------------------------
-		public void TitleButtonClick(object sender, EventArgs e) {
-			Button clickedBut = sender as Button;
+		//public void TitleButtonClick(object sender, EventArgs e) {
+		//	Button clickedBut = sender as Button;
 
-			if (clickedBut.Equals(playButton)) {
+		//			}
+
+		//--------------------------------------------------------------------------------
+		// Handle clicks here. Player control.
+		//--------------------------------------------------------------------------------
+		public void ButtonClick(object sender, EventArgs e) {
+			Button clickedBut = sender as Button;
+			int elementNumber = -1;
+
+			// Handle titlescreen clicks.
+			if (clickedBut.Equals(game.titleScreen.playButton)) {
 				gameActive = true;
-				InitializeBoard();
+				Content = game.gameBoard.InitializeBoard(ButtonClick);
 
 				// Select random first player.
 				int result = rnd.Next(0, 2);
+				Console.WriteLine($"*** result = {result} ***");
 				if (result == 0) {
 					// Enable all blank buttons so the player can move.
 					for (int i = 0; i < 9; i++) {
-						if (positionButton[i].IsEnabled == false) {
-							positionButton[i].IsEnabled = true;
+						if (game.gameBoard.positionButton[i].IsEnabled == false) {
+							game.gameBoard.positionButton[i].IsEnabled = true;
 						}
 					}
 					playerTurn = true;
@@ -541,68 +134,64 @@ namespace TicTacToe {
 				}
 			}
 
-			if (clickedBut.Equals(quitButton)) {
+			if (clickedBut.Equals(game.titleScreen.quitButton)) {
 				CloseGame();
 			}
 
 			// 
-			if (clickedBut.Equals(diffButton)) {
+			if (clickedBut.Equals(game.titleScreen.diffButton)) {
 				switch (difficulty) {
 					case 0:
 						difficulty = Difficulty.hard;
-						diffLabel.Text = "Hard";
+						game.titleScreen.diffLabel.Text = "Hard";
 						break;
 					case (Difficulty)1:
 						difficulty = Difficulty.expert;
-						diffLabel.Text = "Expert";
+						game.titleScreen.diffLabel.Text = "Expert";
 						break;
 					case (Difficulty)2:
 						difficulty = Difficulty.normal;
-						diffLabel.Text = "Normal";
+						game.titleScreen.diffLabel.Text = "Normal";
 						break;
 					default:
 						break;
 				}
 			}
 
-			if (clickedBut.Equals(returnButton)) {
-				InitializeTitle();
+			if (clickedBut.Equals(game.gameBoard.returnButton)) {
+				//game.gameBoard.ResetGameBoard();
+				Content = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
 			}
-		}
-
-		//--------------------------------------------------------------------------------
-		// Handle gameboard clicks here and player control.
-		//--------------------------------------------------------------------------------
-		public void ButtonClick(object sender, EventArgs e) {
-			Button clickedBut = sender as Button;
-			int elementNumber = -1;
-
+			
+			// Handle gameboard clicks.
 			// Iterate through button array for matching element.
 			for (int i = 0; i < 9; i++) {
-				if (clickedBut.Equals(positionButton[i])) {
+				if (clickedBut.Equals(game.gameBoard.positionButton[i])) {
 					elementNumber = i;
+
+					// Set button's matching label.
+					game.gameBoard.positionLabel[elementNumber].Text = "X";
+					clickedBut.IsEnabled = false;
+					playerTurn = false;
 				}
 			}
 
-			// Set button's matching label.
-			positionLabel[elementNumber].Text = "X";
-			clickedBut.IsEnabled = false;
-			playerTurn = false;
+			
 
 			// Disable all blank buttons until player can move again.
 			for (int i = 0; i < 9; i++) {
-				if (positionButton[i].IsEnabled == true) {
-					positionButton[i].IsEnabled = false;
+				if (game.gameBoard.positionButton[i].IsEnabled == true) {
+					game.gameBoard.positionButton[i].IsEnabled = false;
 				}
 			}
 
 			// Check for player win.
 			if (CheckForWinner("X")) {
 				gameActive = false;
-				wins += 1;
-				headerLabel[0].Text = $"Player: {wins}";
-				footerLabel.Text = "You win! Click for menu.";
-				returnButton.IsEnabled = true;
+				Game.wins += 1;
+				game.gameBoard.headerLabel[0].Text = $"Player: {Game.wins}";
+				game.gameBoard.footerLabel.Text = "You win! Click for menu.";
+				game.gameBoard.returnButton.IsEnabled = true;
 				//await Task.Delay(2000);
 			}
 
@@ -622,6 +211,11 @@ namespace TicTacToe {
 			} else {
 				// Code
 			}
+
+			// Handle highscores return.
+			if (clickedBut.Equals(game.titleScreen.scoreButton)) {
+				game.highScore.InitializeHighScoreScreen(highScore, ButtonClick);
+			}
 		}
 
 		//--------------------------------------------------------------------------------
@@ -630,9 +224,7 @@ namespace TicTacToe {
 		public void HSButtonClick(object sender, EventArgs e) {
 			Button clickedBut = sender as Button;
 
-			if (clickedBut.Equals(scoreButton)) {
-				InitializeHighScores();
-			}
+			
 		}
 
 		//--------------------------------------------------------------------------------
@@ -650,7 +242,7 @@ namespace TicTacToe {
 			}
 
 			// Display delay for CPU turn.
-			footerLabel.Text = "Please wait...";
+			game.gameBoard.footerLabel.Text = "Please wait...";
 			await Task.Delay(2000);
 
 			// Move determined by difficulty.
@@ -675,18 +267,18 @@ namespace TicTacToe {
 
 						foreach (int elementInt in element) {
 							// Count own elements.
-							if (positionLabel[elementInt].Text == symbol) {
+							if (game.gameBoard.positionLabel[elementInt].Text == symbol) {
 								ownElement++;
 							}
 							// Select potential move.
-							if (positionLabel[elementInt].Text == "") {
+							if (game.gameBoard.positionLabel[elementInt].Text == "") {
 								winningPosition = elementInt;
 							}
 						}
 						// Make move and return.
 						if (ownElement == 2 && winningPosition != -1) {
-							positionLabel[winningPosition].Text = symbol;
-							positionButton[winningPosition].IsEnabled = false;
+							game.gameBoard.positionLabel[winningPosition].Text = symbol;
+							game.gameBoard.positionButton[winningPosition].IsEnabled = false;
 							moved = true;
 							break;
 						}
@@ -700,18 +292,18 @@ namespace TicTacToe {
 
 							foreach (int elementInt in element) {
 								// Count opponent elements.
-								if (positionLabel[elementInt].Text == opponentSymbol) {
+								if (game.gameBoard.positionLabel[elementInt].Text == opponentSymbol) {
 									opponentElement++;
 								}
 								// Select potential move.
-								if (positionLabel[elementInt].Text == "") {
+								if (game.gameBoard.positionLabel[elementInt].Text == "") {
 									blockPosition = elementInt;
 								}
 							}
 							// Make move and return.
 							if (opponentElement == 2 && blockPosition != -1) {
-								positionLabel[blockPosition].Text = symbol;
-								positionButton[blockPosition].IsEnabled = false;
+								game.gameBoard.positionLabel[blockPosition].Text = symbol;
+								game.gameBoard.positionButton[blockPosition].IsEnabled = false;
 								moved = true;
 								break;
 							}
@@ -720,9 +312,9 @@ namespace TicTacToe {
 
 					// Take middle position if available.
 					if (moved == false) {
-						if (positionLabel[4].Text == "") {
-							positionLabel[4].Text = symbol;
-							positionButton[4].IsEnabled = false;
+						if (game.gameBoard.positionLabel[4].Text == "") {
+							game.gameBoard.positionLabel[4].Text = symbol;
+							game.gameBoard.positionButton[4].IsEnabled = false;
 							moved = true;
 						}
 					}
@@ -733,10 +325,10 @@ namespace TicTacToe {
 					int rndPosition;
 					do {
 						rndPosition = rnd.Next(0, 9);
-					} while (positionLabel[rndPosition].Text != "");
+					} while (game.gameBoard.positionLabel[rndPosition].Text != "");
 
-					positionLabel[rndPosition].Text = symbol;
-					positionButton[rndPosition].IsEnabled = false;
+					game.gameBoard.positionLabel[rndPosition].Text = symbol;
+					game.gameBoard.positionButton[rndPosition].IsEnabled = false;
 					moved = true;
 					playerTurn = true;
 				}
@@ -746,10 +338,10 @@ namespace TicTacToe {
 					int rndPosition;
 					do {
 						rndPosition = rnd.Next(0, 9);
-					} while (positionLabel[rndPosition].Text != "");
+					} while (game.gameBoard.positionLabel[rndPosition].Text != "");
 
-					positionLabel[rndPosition].Text = symbol;
-					positionButton[rndPosition].IsEnabled = false;
+					game.gameBoard.positionLabel[rndPosition].Text = symbol;
+					game.gameBoard.positionButton[rndPosition].IsEnabled = false;
 					moved = true;
 					playerTurn = true;
 				}
@@ -758,9 +350,9 @@ namespace TicTacToe {
 			// Check for CPU win.
 			if (CheckForWinner("O") == true) {
 				gameActive = false;
-				losses++;
-				headerLabel[2].Text = $"CPU: {losses}";
-				returnButton.IsEnabled = true;
+				Game.losses++;
+				game.gameBoard.headerLabel[2].Text = $"CPU: {Game.losses}";
+				game.gameBoard.returnButton.IsEnabled = true;
 			}
 
 			// Check for draw.
@@ -770,13 +362,13 @@ namespace TicTacToe {
 
 			// Enable all blank buttons so the player can move again.
 			for (int i = 0; i < 9; i++) {
-				if (positionLabel[i].Text == "") {
-					positionButton[i].IsEnabled = true;
+				if (game.gameBoard.positionLabel[i].Text == "") {
+					game.gameBoard.positionButton[i].IsEnabled = true;
 				}
 			}
 
 			if (gameActive == true) {
-				footerLabel.Text = "Please make your move...";
+				game.gameBoard.footerLabel.Text = "Please make your move...";
 				playerTurn = true;
 			}
 		}
@@ -791,21 +383,21 @@ namespace TicTacToe {
 
 				foreach (int elementInt in element) {
 					// Count own elements.
-					if (positionLabel[elementInt].Text == symbol) {
+					if (game.gameBoard.positionLabel[elementInt].Text == symbol) {
 						ownElement++;
 					}
 				}
 				// Make move and return.
 				if (ownElement == 3) {
 					if (symbol == "X") {
-						footerLabel.Text = "You Win! Click for menu.";
+						game.gameBoard.footerLabel.Text = "You Win! Click for menu.";
 					} else {
-						footerLabel.Text = "Sorry, you lose! Click for menu.";
+						game.gameBoard.footerLabel.Text = "Sorry, you lose! Click for menu.";
 					}
 					// Disable all blank buttons.
 					for (int i = 0; i < 9; i++) {
-						if (positionLabel[i].Text == "") {
-							positionButton[i].IsEnabled = false;
+						if (game.gameBoard.positionLabel[i].Text == "") {
+							game.gameBoard.positionButton[i].IsEnabled = false;
 						}
 					}
 					return true;
@@ -823,16 +415,16 @@ namespace TicTacToe {
 
 			// Iterate through all labels and count open moves.
 			for (int i = 0; i < 9; i++) {
-				if (positionLabel[i].Text == "") {
+				if (game.gameBoard.positionLabel[i].Text == "") {
 					count++;
 				}
 			}
 
 			if (count == 0) {
-				draws++;
-				headerLabel[1].Text = $"Draws: {draws}";
-				footerLabel.Text = "It's a draw! Click for menu.";
-				returnButton.IsEnabled = true;
+				Game.draws++;
+				game.gameBoard.headerLabel[1].Text = $"Draws: {Game.draws}";
+				game.gameBoard.footerLabel.Text = "It's a draw! Click for menu.";
+				game.gameBoard.returnButton.IsEnabled = true;
 				return true;
 			} else {
 				return false;
@@ -844,7 +436,7 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void CloseGame() {
 			DateTime currentDateTime = DateTime.Now;
-			highScore.Add(new Score { date = DateTime.Today, data = wins });
+			highScore.Add(new Score { date = DateTime.Today, data = Game.wins });
 			string jsonString = JsonSerializer.Serialize(highScore);
 			File.WriteAllText(fileName, jsonString);
 
