@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using Xamarin.Forms;
+using System.Globalization;
 
 namespace TicTacToe {
 	public class Score {
-		public DateTime date { get; set; }
+		public string date { get; set; }
 		public int data { get; set; }
 	}
 
@@ -19,7 +20,6 @@ namespace TicTacToe {
 
 	public partial class MainPage : ContentPage {
 		Game game = new Game();
-		//TitleScreen titleScreen = new TitleScreen();
 		
 		public bool playerTurn = false;
 		public string headerMessage = "";
@@ -39,13 +39,11 @@ namespace TicTacToe {
 			new List<int> { 0, 4, 8 },
 			new List<int> { 2, 4, 6 }
 		};
-		//public StackLayout stackLayout = new StackLayout();
 
 		List<Score> highScore = new List<Score>() {
 			//new Score { date = DateTime.Today, data = 125 },
 			//new Score { date = DateTime.Today, data = 78 }
 		};
-		
 
 		public MainPage() {
 			// Initialize system.
@@ -57,7 +55,8 @@ namespace TicTacToe {
 			// Initialize the title screen.
 			//stackLayout = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
 			//InitializeTitle();
-			Content = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
+			
+			Content = game.titleScreen.stackLayout;
 		}
 
 		//--------------------------------------------------------------------------------
@@ -66,60 +65,49 @@ namespace TicTacToe {
 		public void Initialize() {
 			string jsonString = File.ReadAllText(fileName);
 			highScore = JsonSerializer.Deserialize<List<Score>>(jsonString);
+
+			JsonDocument doc = JsonDocument.Parse(jsonString);
+			JsonElement root = doc.RootElement;
+			var entries = root.EnumerateArray();
+			while (entries.MoveNext()) {
+				var entry = entries.Current;
+				Console.WriteLine($"entry = {entry}");
+
+				var props = entry.EnumerateObject();
+
+				while (props.MoveNext()) {
+					var prop = props.Current;
+					Console.WriteLine($"{prop.Name}: {prop.Value}");
+					if (prop.Name == "date") {
+						var dt = prop.Value;
+						Console.WriteLine($"dt = {prop.Value}");
+					}
+				}
+			}
 			//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
+
+			// Setup stacklayouts.
+			game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
+			game.gameBoard.InitializeBoard(ButtonClick);
+			game.highScore.InitializeHighScoreScreen(highScore, ButtonClick);
 		}
-
-		//--------------------------------------------------------------------------------
-		// Initialize the title screen.
-		//--------------------------------------------------------------------------------
-		//public void InitializeTitle() {
-			
-		//}
-
-		////--------------------------------------------------------------------------------
-		//// Initialize and setup the gameboard.
-		////--------------------------------------------------------------------------------
-		//public void InitializeBoard() {
-			
-		//}
-
-		////--------------------------------------------------------------------------------
-		//// Initialize high scores.
-		////--------------------------------------------------------------------------------
-		//public void InitializeHighScores() {
-		//	// Test data.
-			
-		//	//Console.WriteLine($"Path = {Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json")}");
-		//	//string fileName = "HighScores.json";
-		//	//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
-			
-		//	//Console.WriteLine(File.ReadAllText(fileName));
-
-		//}
-
-		//--------------------------------------------------------------------------------
-		// Handle title screen clicks here and player control.
-		//--------------------------------------------------------------------------------
-		//public void TitleButtonClick(object sender, EventArgs e) {
-		//	Button clickedBut = sender as Button;
-
-		//			}
 
 		//--------------------------------------------------------------------------------
 		// Handle clicks here. Player control.
 		//--------------------------------------------------------------------------------
 		public void ButtonClick(object sender, EventArgs e) {
-			Button clickedBut = sender as Button;
+			Button clickedButton = sender as Button;
 			int elementNumber = -1;
 
-			// Handle titlescreen clicks.
-			if (clickedBut.Equals(game.titleScreen.playButton)) {
+			// Handle titlescreen clicks. ------------------------------------------------
+			// playButton only control, titleScreen only.
+			if (clickedButton.Equals(game.titleScreen.playButton)) {
 				gameActive = true;
-				Content = game.gameBoard.InitializeBoard(ButtonClick);
+				game.gameBoard.ResetGameBoard(); // Necessary?
+				Content = game.gameBoard.stackLayout;
 
 				// Select random first player.
 				int result = rnd.Next(0, 2);
-				Console.WriteLine($"*** result = {result} ***");
 				if (result == 0) {
 					// Enable all blank buttons so the player can move.
 					for (int i = 0; i < 9; i++) {
@@ -127,6 +115,7 @@ namespace TicTacToe {
 							game.gameBoard.positionButton[i].IsEnabled = true;
 						}
 					}
+					game.gameBoard.footerLabel.Text = "Please make your move...";
 					playerTurn = true;
 				} else {
 					playerTurn = false;
@@ -134,12 +123,14 @@ namespace TicTacToe {
 				}
 			}
 
-			if (clickedBut.Equals(game.titleScreen.quitButton)) {
+			// quitButton only control, titleScreen only.
+			if (clickedButton.Equals(game.titleScreen.quitButton)) {
 				CloseGame();
 			}
 
-			// 
-			if (clickedBut.Equals(game.titleScreen.diffButton)) {
+			// diffButton only control, titleScreen only.
+			// Change game difficulty.
+			if (clickedButton.Equals(game.titleScreen.diffButton)) {
 				switch (difficulty) {
 					case 0:
 						difficulty = Difficulty.hard;
@@ -158,73 +149,78 @@ namespace TicTacToe {
 				}
 			}
 
-			if (clickedBut.Equals(game.gameBoard.returnButton)) {
-				//game.gameBoard.ResetGameBoard();
-				Content = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
-			}
-			
-			// Handle gameboard clicks.
+			// Handle gameboard clicks. --------------------------------------------------
 			// Iterate through button array for matching element.
-			for (int i = 0; i < 9; i++) {
-				if (clickedBut.Equals(game.gameBoard.positionButton[i])) {
-					elementNumber = i;
+			if (playerTurn == true) {
+				for (int i = 0; i < 9; i++) {
+					if (clickedButton.Equals(game.gameBoard.positionButton[i])) {
+						elementNumber = i;
 
-					// Set button's matching label.
-					game.gameBoard.positionLabel[elementNumber].Text = "X";
-					clickedBut.IsEnabled = false;
+						// Set button's matching label.
+						game.gameBoard.positionLabel[elementNumber].Text = "X";
+						clickedButton.IsEnabled = false;
+						playerTurn = false;
+
+						// Disable all blank buttons so player cannot move again.
+						for (int j = 0; j < 9; j++) {
+							if (game.gameBoard.positionButton[j].IsEnabled == true) {
+								game.gameBoard.positionButton[j].IsEnabled = false;
+							}
+						}
+						break;
+					}
+				}
+
+				// Check for player win.
+				if (CheckForWinner("X") == true) {
+					gameActive = false;
+					Game.wins++;
+					//Game.wins += 1;
+					game.gameBoard.headerLabel[0].Text = $"Player: {Game.wins}";
+					game.gameBoard.returnButton.IsEnabled = true;
+				}
+
+				// Check for draw game.
+				if (gameActive == true && CheckForDraw() == true) {
+					gameActive = false;
 					playerTurn = false;
 				}
 			}
-
 			
+			// ?
+			//if (playerTurn == true) {
+			//	// Enable all blank buttons so player can move again.
+			//	for (int i = 0; i < 9; i++) {
+			//		if (game.gameBoard.positionButton[i].IsEnabled == false) {
+			//			game.gameBoard.positionButton[i].IsEnabled = true;
+			//		}
+			//	}
+			//}
 
-			// Disable all blank buttons until player can move again.
-			for (int i = 0; i < 9; i++) {
-				if (game.gameBoard.positionButton[i].IsEnabled == true) {
-					game.gameBoard.positionButton[i].IsEnabled = false;
-				}
-			}
-
-			// Check for player win.
-			if (CheckForWinner("X")) {
-				gameActive = false;
-				Game.wins += 1;
-				game.gameBoard.headerLabel[0].Text = $"Player: {Game.wins}";
-				game.gameBoard.footerLabel.Text = "You win! Click for menu.";
-				game.gameBoard.returnButton.IsEnabled = true;
-				//await Task.Delay(2000);
-			}
-
-			// Check for draw game.
-			if (gameActive == true && CheckForDraw() == true) {
-				gameActive = false;
-				// Code here
-			}
+			// *** Isolate this, ran all clicks! ***
+			
 
 			// Control gameflow if active.
 			if (gameActive == true) {
-				// Set control for CPU.
-				playerTurn = false;
+				if (playerTurn == false) {
+					// Initialize CPU move.
+					CPUTurn("O");
+				}
+			} 
 
-				// Initialize CPU move.
-				CPUTurn("O");
-			} else {
-				// Code
+			// returnButton only control, gameBoard only.
+			if (clickedButton.Equals(game.gameBoard.returnButton)) {
+				Content = game.titleScreen.stackLayout;
+				//Content = game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
 			}
 
-			// Handle highscores return.
-			if (clickedBut.Equals(game.titleScreen.scoreButton)) {
-				game.highScore.InitializeHighScoreScreen(highScore, ButtonClick);
+			// Handle highscores. --------------------------------------------------------
+			if (clickedButton.Equals(game.titleScreen.scoreButton)) {
+				Content = game.highScore.stackLayout;
 			}
-		}
-
-		//--------------------------------------------------------------------------------
-		// Handle gameboard clicks here and player control.
-		//--------------------------------------------------------------------------------
-		public void HSButtonClick(object sender, EventArgs e) {
-			Button clickedBut = sender as Button;
-
-			
+			if (clickedButton.Equals(game.highScore.returnButton)) {
+				Content = game.titleScreen.stackLayout;
+			}
 		}
 
 		//--------------------------------------------------------------------------------
@@ -320,31 +316,19 @@ namespace TicTacToe {
 					}
 				}
 
-				// Make a random move.
-				if (moved == false && playerTurn == false) {
-					int rndPosition;
-					do {
-						rndPosition = rnd.Next(0, 9);
-					} while (game.gameBoard.positionLabel[rndPosition].Text != "");
+			}
+				
+			// Make a random move.
+			if (moved == false && playerTurn == false) {
+				int rndPosition;
+				do {
+					rndPosition = rnd.Next(0, 9);
+				} while (game.gameBoard.positionLabel[rndPosition].Text != "");
 
-					game.gameBoard.positionLabel[rndPosition].Text = symbol;
-					game.gameBoard.positionButton[rndPosition].IsEnabled = false;
-					moved = true;
-					playerTurn = true;
-				}
-			} else {
-				// Make a random move.
-				if (moved == false && playerTurn == false) {
-					int rndPosition;
-					do {
-						rndPosition = rnd.Next(0, 9);
-					} while (game.gameBoard.positionLabel[rndPosition].Text != "");
-
-					game.gameBoard.positionLabel[rndPosition].Text = symbol;
-					game.gameBoard.positionButton[rndPosition].IsEnabled = false;
-					moved = true;
-					playerTurn = true;
-				}
+				game.gameBoard.positionLabel[rndPosition].Text = symbol;
+				game.gameBoard.positionButton[rndPosition].IsEnabled = false;
+				//moved = true; // Necessary?
+				//playerTurn = true;
 			}
 
 			// Check for CPU win.
@@ -435,8 +419,12 @@ namespace TicTacToe {
 		// Close the game. ???
 		//--------------------------------------------------------------------------------
 		public void CloseGame() {
-			DateTime currentDateTime = DateTime.Now;
-			highScore.Add(new Score { date = DateTime.Today, data = Game.wins });
+			// Write high scores file on quit.
+			string currentDateTime = DateTime.Now.ToShortDateString();
+			highScore.Add(new Score { date = currentDateTime, data = Game.wins });
+			// Sort ?
+			
+
 			string jsonString = JsonSerializer.Serialize(highScore);
 			File.WriteAllText(fileName, jsonString);
 

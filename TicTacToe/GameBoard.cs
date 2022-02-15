@@ -10,6 +10,7 @@ namespace TicTacToe {
 		public Label footerLabel;
 		public Button returnButton;
 		public Grid gridBoard;
+		public StackLayout stackLayout;
 
 		public GameBoard() {
 			// Setup buttons and labels.
@@ -28,9 +29,9 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		// Initialize and setup the gameboard.
 		//--------------------------------------------------------------------------------
-		public StackLayout InitializeBoard(EventHandler eventHandler) {
+		public void InitializeBoard(EventHandler eventHandler) {
 			// Create a new stack layout.
-			var stackLayout = new StackLayout { Padding = 5 };
+			stackLayout = new StackLayout { Padding = 5 };
 
 			// Create top grid.
 			Grid topGrid = new Grid {
@@ -219,11 +220,20 @@ namespace TicTacToe {
 			//Title = "Tic-Tac-Toe";
 			//Content = grid;
 			//content = stackLayout;
-			return stackLayout;
+			//return stackLayout;
 		}
 
-		//public void ResetGameBoard() { 
-		
-		//}
+		//--------------------------------------------------------------------------------
+		// Reset the gameboard for a new game.
+		//--------------------------------------------------------------------------------
+		public void ResetGameBoard() {
+
+			for (int i = 0; i < 9; i++) {
+				positionLabel[i].Text = "";
+				positionButton[i].IsEnabled = false;
+			}
+
+			returnButton.IsEnabled = false;
+		}
 	}
 }

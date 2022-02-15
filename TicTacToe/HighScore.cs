@@ -7,15 +7,16 @@ namespace TicTacToe {
 	public class HighScore {
 		public Label returnLabel;
 		public Button returnButton;
+		public StackLayout stackLayout;
 
 		public HighScore() {
 			returnLabel = new Label();
 			returnButton = new Button();
 		}
 
-		public StackLayout InitializeHighScoreScreen(List<Score> highScore, EventHandler eventHandler) {
+		public void InitializeHighScoreScreen(List<Score> highScore, EventHandler eventHandler) {
 			// Create a new stack layout.
-			var stackLayout = new StackLayout { Padding = 5 };
+			stackLayout = new StackLayout { Padding = 5 };
 
 			// Create grid for header.
 			Grid headerGrid = new Grid {
@@ -61,9 +62,26 @@ namespace TicTacToe {
 			};
 
 			// ** Todo: Handle different platforms. **
+			string tempString = "";
 			string jsonString = JsonSerializer.Serialize(highScore);
+			JsonDocument doc = JsonDocument.Parse(jsonString);
+			JsonElement root = doc.RootElement;
+			var entries = root.EnumerateArray();
+			while (entries.MoveNext()) {
+				var entry = entries.Current;
+				var props = entry.EnumerateObject();
+				while (props.MoveNext()) {
+					var prop = props.Current;
+					if (prop.Name == "date") {
+						tempString += $"{prop.Value} \t- ";
+					} else {
+						tempString += $"\t{prop.Value}\n";
+					}
+				}
+			}
 			Label contentLabel = new Label {
-				Text = jsonString,
+				//Text = jsonString,
+				Text = tempString,
 				FontSize = 32
 			};
 
@@ -106,7 +124,7 @@ namespace TicTacToe {
 
 			stackLayout.Children.Add(bottomGrid);
 			//content = stackLayout;
-			return stackLayout;
+			//return stackLayout;
 		}
 	}
 }

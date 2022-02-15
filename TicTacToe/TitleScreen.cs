@@ -14,6 +14,7 @@ namespace TicTacToe {
 		public Button scoreButton;
 		public Label diffLabel;
 		public Button diffButton;
+		public StackLayout stackLayout;
 
 		public TitleScreen() {
 			playLabel = new Label();
@@ -28,13 +29,12 @@ namespace TicTacToe {
 			diffButton = new Button();
 		}
 
-		public StackLayout InitializeTitle(EventHandler eventHandler, int diff) {
+		public void InitializeTitle(EventHandler eventHandler, int diff) {
 			// Create a new stack layout.
-			StackLayout stackLayout = new StackLayout { Padding = 5 };
+			stackLayout = new StackLayout { Padding = 5 };
 
 			// Load title image.
 			Image image = new Image { Source = "tic-tac-toe.png" };
-			//Image image = new Image();
 			//image.Source = ImageSource.FromFile("tic-tac-toe.png");
 			image.Aspect = Aspect.AspectFill;
 			stackLayout.Children.Add(image);
@@ -138,8 +138,7 @@ namespace TicTacToe {
 			quitButton.Clicked += new EventHandler(eventHandler);
 
 			stackLayout.Children.Add(topGrid);
-			return stackLayout;
-			//content = stackLayout;
+			//return stackLayout;
 		}
 	}
 }
