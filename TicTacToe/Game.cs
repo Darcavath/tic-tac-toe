@@ -1,7 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
-
-namespace TicTacToe {
+﻿namespace TicTacToe {
 	public class Game {
 		public TitleScreen titleScreen;
 		public HighScore highScore;

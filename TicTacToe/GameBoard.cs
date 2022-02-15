@@ -227,7 +227,6 @@ namespace TicTacToe {
 		// Reset the gameboard for a new game.
 		//--------------------------------------------------------------------------------
 		public void ResetGameBoard() {
-
 			for (int i = 0; i < 9; i++) {
 				positionLabel[i].Text = "";
 				positionButton[i].IsEnabled = false;

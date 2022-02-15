@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using Xamarin.Forms;
-using System.Globalization;
 
 namespace TicTacToe {
 	public class Score {
@@ -28,6 +27,7 @@ namespace TicTacToe {
 		public bool loop = true;
 		public Difficulty difficulty = Difficulty.normal;
 		public string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HighScores.json");
+		public string errorLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Errors.log");
 		public Random rnd = new Random();
 		public List<List<int>> winPatterns = new List<List<int>>() {
 			new List<int> { 0, 1, 2 },
@@ -63,29 +63,12 @@ namespace TicTacToe {
 		// General initialization.
 		//--------------------------------------------------------------------------------
 		public void Initialize() {
+			// Create or open error log.
+
+			// Create or load high scores file.
 			string jsonString = File.ReadAllText(fileName);
 			highScore = JsonSerializer.Deserialize<List<Score>>(jsonString);
-
-			JsonDocument doc = JsonDocument.Parse(jsonString);
-			JsonElement root = doc.RootElement;
-			var entries = root.EnumerateArray();
-			while (entries.MoveNext()) {
-				var entry = entries.Current;
-				Console.WriteLine($"entry = {entry}");
-
-				var props = entry.EnumerateObject();
-
-				while (props.MoveNext()) {
-					var prop = props.Current;
-					Console.WriteLine($"{prop.Name}: {prop.Value}");
-					if (prop.Name == "date") {
-						var dt = prop.Value;
-						Console.WriteLine($"dt = {prop.Value}");
-					}
-				}
-			}
-			//highScore = JsonSerializer.Deserialize<Score>(jsonString)!;
-
+			
 			// Setup stacklayouts.
 			game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
 			game.gameBoard.InitializeBoard(ButtonClick);
@@ -327,8 +310,6 @@ namespace TicTacToe {
 
 				game.gameBoard.positionLabel[rndPosition].Text = symbol;
 				game.gameBoard.positionButton[rndPosition].IsEnabled = false;
-				//moved = true; // Necessary?
-				//playerTurn = true;
 			}
 
 			// Check for CPU win.
@@ -428,9 +409,9 @@ namespace TicTacToe {
 			string jsonString = JsonSerializer.Serialize(highScore);
 			File.WriteAllText(fileName, jsonString);
 
-			// ** Fix this! **
+			// ** Fix this! ** Only for Mac, no exit on iOS!
 			Console.WriteLine("** Exit complete! **");
-			System.Environment.Exit(0);
+			System.Diagnostics.Process.GetCurrentProcess().Kill();
 		}
 	}
 }
