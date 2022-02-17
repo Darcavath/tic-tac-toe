@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using Xamarin.Forms;
+using System.Linq;
 
 namespace TicTacToe {
 	public class Score {
@@ -64,11 +65,24 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void Initialize() {
 			// Create or open error log.
+			if (!File.Exists(errorLogFile)) {
+				//File.Create(errorLogFile);
+				string message = $"{DateTime.Now.ToShortDateString()}: error log file el created.\n";
+				File.WriteAllText(errorLogFile, message);
+			}
 
 			// Create or load high scores file.
-			string jsonString = File.ReadAllText(fileName);
-			highScore = JsonSerializer.Deserialize<List<Score>>(jsonString);
-			
+			if (File.Exists(fileName)) {
+				string jsonString = File.ReadAllText(fileName);
+				highScore = JsonSerializer.Deserialize<List<Score>>(jsonString);
+			} else {
+				// Create highscores file.
+				//File.Create(fileName);
+
+				string message = $"{DateTime.Now.ToShortDateString()}: highscores file {fileName} created.\n";
+				File.WriteAllText(errorLogFile, message);
+			}
+
 			// Setup stacklayouts.
 			game.titleScreen.InitializeTitle(ButtonClick, (int)difficulty);
 			game.gameBoard.InitializeBoard(ButtonClick);
@@ -404,10 +418,13 @@ namespace TicTacToe {
 			string currentDateTime = DateTime.Now.ToShortDateString();
 			highScore.Add(new Score { date = currentDateTime, data = Game.wins });
 			// Sort ?
-			
+			List<Score> objSortedList = highScore.OrderByDescending(o => o.data).ToList();
 
-			string jsonString = JsonSerializer.Serialize(highScore);
+
+			string jsonString = JsonSerializer.Serialize(objSortedList);
 			File.WriteAllText(fileName, jsonString);
+			string errorMessage = "Highscores written to HighScore.json\n";
+			File.WriteAllText(errorLogFile, errorMessage);
 
 			// ** Fix this! ** Only for Mac, no exit on iOS!
 			Console.WriteLine("** Exit complete! **");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Xamarin.Forms;
 
@@ -63,10 +64,12 @@ namespace TicTacToe {
 
 			// ** Todo: Handle different platforms. **
 			string tempString = "";
-			string jsonString = JsonSerializer.Serialize(highScore);
+			List<Score> objSortedList = highScore.OrderByDescending(o => o.data).ToList();
+			string jsonString = JsonSerializer.Serialize(objSortedList);
 			JsonDocument doc = JsonDocument.Parse(jsonString);
 			JsonElement root = doc.RootElement;
 			var entries = root.EnumerateArray();
+			int count = 0;
 			while (entries.MoveNext()) {
 				var entry = entries.Current;
 				var props = entry.EnumerateObject();
@@ -76,9 +79,11 @@ namespace TicTacToe {
 						tempString += $"{prop.Value} \t- ";
 					} else {
 						tempString += $"\t{prop.Value}\n";
+						count++;
 					}
 				}
 			}
+			tempString += $"{count} scores recorded.";
 			Label contentLabel = new Label {
 				//Text = jsonString,
 				Text = tempString,
