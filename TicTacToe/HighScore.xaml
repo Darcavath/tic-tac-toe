@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TicTacToe.HighScore">
+    <ContentPage.Content>
+        <StackLayout Padding="5">
+            <!-- Top display panel -->
+            <Label BackgroundColor="DeepSkyBlue"
+                   HorizontalOptions="CenterAndExpand"
+                   Text="High Scores"
+                   TextColor="White"
+                   FontSize="32" />
+
+            <Grid x:Name="scrollGrid"
+                  RowSpacing="5"
+                  ColumnSpacing="5"
+				  VerticalOptions="FillAndExpand">
+	            <Grid.RowDefinitions>
+			        <RowDefinition />
+			    </Grid.RowDefinitions>	
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+			    </Grid.ColumnDefinitions>
+
+                
+
+                <ScrollView BindableLayout.ItemsSource="{Binding contentLabel}"
+                            VerticalOptions="FillAndExpand"
+                            Grid.Column="0"
+                            Grid.Row="0" >
+							
+                    <Label x:Name="contentLabel"
+                       BackgroundColor="LightSlateGray"
+                       TextColor="DarkBlue"
+                       FontSize="32" />
+							
+				</ScrollView>
+
+            </Grid>
+
+            <!-- Return button -->
+            <Button BackgroundColor="DeepSkyBlue"
+                    FontSize="48"
+                    TextColor="White"
+		            Text="Return"
+					x:Name="returnButton"
+					Clicked="ReturnButtonClick" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

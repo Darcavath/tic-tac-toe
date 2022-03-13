@@ -113,8 +113,6 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon20.png">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\Image-3.imageset\Contents.json" />
-    <ImageAsset Include="Assets.xcassets\Image-3.imageset\tic-tac-toe.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -137,5 +135,11 @@
       <Project>{CB3152ED-063C-4CAB-8A67-CED1D4E8986D}</Project>
       <Name>TicTacToe</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets.xcassets\tic-tac-toe.imageset\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\tic-tac-toe.png" />
   </ItemGroup>
 </Project>

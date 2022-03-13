@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="TicTacToe.GameBoard">
+    <ContentPage.Content>
+        <StackLayout Padding="5">
+            <!-- Grid for header -->
+            <Grid HorizontalOptions="FillAndExpand">
+	            <Grid.RowDefinitions>
+			        <RowDefinition />
+			    </Grid.RowDefinitions>	
+                <Grid.ColumnDefinitions>
+		            <ColumnDefinition />	
+		            <ColumnDefinition />	
+                    <ColumnDefinition />
+			    </Grid.ColumnDefinitions>
+            
+                <BoxView BackgroundColor = "DeepSkyBlue"
+				         CornerRadius = "5"
+					     Grid.Column="0"
+					     Grid.ColumnSpan="3"
+					     Grid.Row="0" />
+
+                <Label x:Name="headerLeft"
+					   TextColor="White"
+                       Text="{Binding game.playerScore}"
+                       FontSize="24"
+                       HorizontalOptions="Start"
+                       VerticalOptions="Center"
+                       Grid.Column="0"
+                       Grid.Row="0" />
+                <Label x:Name="headerMiddle"
+					   TextColor="White"
+                       Text="Draw 0"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Grid.Column="1"
+                       Grid.Row="0" />
+                <Label x:Name="headerRight"
+					   TextColor="White"
+                       Text="CPU 0"
+                       FontSize="24"
+                       HorizontalOptions="End"
+                       VerticalOptions="Center"
+                       Grid.Column="2"
+                       Grid.Row="0" />
+            </Grid>
+
+            <!-- Grid for gameboard -->
+            <Grid x:Name="PositionGrid"
+				  HorizontalOptions="FillAndExpand"
+				  VerticalOptions="FillAndExpand">
+	            <Grid.RowDefinitions>
+			        <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+			    </Grid.RowDefinitions>	
+                <Grid.ColumnDefinitions>
+		            <ColumnDefinition />	
+		            <ColumnDefinition />	
+                    <ColumnDefinition />
+			    </Grid.ColumnDefinitions>
+
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position0"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position1"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position2"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position3"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position4"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position5"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="2"
+                        Grid.Row="1"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position6"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="0"
+                        Grid.Row="2"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position7"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="1"
+                        Grid.Row="2"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+                <Button BackgroundColor="DeepSkyBlue"
+                        x:Name="position8"
+                        Text=""
+                        TextColor="White"
+                        FontSize="96"
+                        Grid.Column="2"
+                        Grid.Row="2"
+                        IsEnabled="True"
+						Clicked="ButtonClick" />
+            </Grid>
+
+            <!-- Grid for footer -->
+            <Grid HorizontalOptions="FillAndExpand">
+	            <Grid.RowDefinitions>
+			        <RowDefinition />
+			    </Grid.RowDefinitions>	
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />	
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+			    </Grid.ColumnDefinitions>
+            
+                <Button Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Grid.Row="0"
+					    BackgroundColor="DeepSkyBlue"
+                        x:FieldModifier="public"
+                        x:Name="footerButton"
+                        CornerRadius="5"
+                        HeightRequest="40"
+                        Text="Information here..."
+                        TextColor="White"
+					    FontSize="24"
+                        InputTransparent="True"
+					    Clicked="ButtonClick" />
+                
+            </Grid>
+            <!-- Button for footer -->
+            
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
