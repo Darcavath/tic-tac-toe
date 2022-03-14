@@ -56,8 +56,12 @@ namespace TicTacToe {
 			}
 			// ************************
 
-			
 
+			diffButton.Text = "Normal";
+
+			game.gameBoard.headerLeft.Text = $"Player: {Game.wins}";
+			game.gameBoard.headerMiddle.Text = $"Draws: {Game.draws}";
+			game.gameBoard.headerRight.Text = $"CPU: {Game.losses}";
 			// Setup stacklayouts.
 			//game.titleScreen = new TitleScreen(this);
 			//game.highScore.InitializeHighScoreScreen(highScoreList, ButtonClick);
@@ -69,10 +73,14 @@ namespace TicTacToe {
 		public void PlayButtonClick(object sender, EventArgs e) {
 			if ((sender as Button).Equals(playButton)) {
 				game.gameActive = true;
-				//Content = game.gameBoard.Content;
 				Application.Current.MainPage = game.gameBoard;// new GameBoard(game);
-				
 				//DisplayAlert("Something", "Message", "OK");
+
+				// Reset gameboard.
+				foreach (Button button in game.gameBoard.buttons) {
+					button.Text = "";
+					button.InputTransparent = false;
+				}
 
 				// Select random first player.
 				int result = game.rnd.Next(0, 2);

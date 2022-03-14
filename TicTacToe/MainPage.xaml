@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TicTacToe.MainPage">
+             x:Class="TicTacToe.MainPage"
+			 x:Name="MainTitlePage" >
     <ContentPage.Content>
 	    <StackLayout Padding="5">
             <!-- Top display panel -->
@@ -33,7 +34,6 @@
                         BackgroundColor="DeepSkyBlue"
                         FontSize="48"
                         TextColor="White"
-                        Text="Diff"
 						x:Name="diffButton"
 						Clicked="DifficultyButtonClick" />
                 <Button Grid.Row="1"
@@ -49,7 +49,7 @@
                         BackgroundColor="DeepSkyBlue"
                         FontSize="48"
                         TextColor="White"
-                        Text="HighSc"
+                        Text="Scores"
 						x:Name="hsButton"
 						Clicked="HSButtonClick" />
                 <Button Grid.Row="2"

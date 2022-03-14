@@ -23,6 +23,7 @@
 					     Grid.Row="0" />
 
                 <Label x:Name="headerLeft"
+                       x:FieldModifier="public"
 					   TextColor="White"
                        Text="{Binding game.playerScore}"
                        FontSize="24"
@@ -31,6 +32,7 @@
                        Grid.Column="0"
                        Grid.Row="0" />
                 <Label x:Name="headerMiddle"
+                       x:FieldModifier="public"
 					   TextColor="White"
                        Text="Draw 0"
                        FontSize="24"
@@ -39,6 +41,7 @@
                        Grid.Column="1"
                        Grid.Row="0" />
                 <Label x:Name="headerRight"
+                       x:FieldModifier="public"
 					   TextColor="White"
                        Text="CPU 0"
                        FontSize="24"

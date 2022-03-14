@@ -32,7 +32,7 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void ButtonClick(object sender, EventArgs e) {
 			Button clickedButton = sender as Button;
-
+			Console.WriteLine("*** BUTTON CLICKED!!! ***");
 			// Handle gameboard clicks. --------------------------------------------------
 			// Iterate through button array for matching element.
 			if (game.playerTurn == true) {
@@ -43,13 +43,6 @@ namespace TicTacToe {
 							buttons[i].Text = "X";
 							buttons[i].InputTransparent = true;
 
-							//buttons[i].TextColor
-							// ** DEBUGGING **
-							//Console.WriteLine("gameboard button pressed!!!");
-
-							// Set button's matching label.?????
-							//game.gameBoard.positionButton[elementNumber].Text = "X";
-							//clickedButton.IsEnabled = false;
 							game.playerTurn = false;
 
 							// Disable all blank buttons so player cannot move again.
@@ -68,32 +61,38 @@ namespace TicTacToe {
 				// Check for player win.
 				if (CheckForWinner("X") == true) {
 					game.gameActive = false;
-					Game.wins++;
-					//Game.wins += 1;
+					//Game.wins++;
 					game.gameBoard.headerLeft.Text = $"Player: {Game.wins}";
 					//game.gameBoard.returnButton.IsEnabled = true;
+					return;
 				}
 
 				// Check for draw game.
 				if (game.gameActive == true && CheckForDraw() == true) {
 					game.gameActive = false;
 					game.playerTurn = false;
+					return;
 				}
-			}
 
-			// Control gameflow if active.
-			if (game.gameActive == true) {
-				if (game.playerTurn == false) {
-					// Initialize CPU move.
-					CPUTurnAsync("O");
+				// Control gameflow if active.
+				if (game.gameActive == true) {
+					if (game.playerTurn == false) {
+						// Initialize CPU move.
+						CPUTurnAsync("O");
+					}
 				}
-			}
 
-			// returnButton only control, gameBoard only.
-			if (clickedButton.Equals(game.gameBoard.footerButton)) {
-				if (clickedButton.InputTransparent == false) {
-					Application.Current.MainPage = new MainPage();
+				
+			} else {
+				// returnButton only control, gameBoard only.
+				if (clickedButton.Equals(game.gameBoard.footerButton)) {
+					if (clickedButton.InputTransparent == false) {
+						Application.Current.MainPage = game.mainPage;
+					}
+					return;
 				}
+
+				return;
 			}
 		}
 
@@ -214,7 +213,7 @@ namespace TicTacToe {
 			// Check for CPU win.
 			if (CheckForWinner("O") == true) {
 				game.gameActive = false;
-				Game.losses++;
+				//Game.losses++;
 				headerRight.Text = $"CPU: {Game.losses}";
 				//game.gameBoard.returnButton.IsEnabled = true;
 			}
@@ -254,8 +253,10 @@ namespace TicTacToe {
 				// Make move and return.
 				if (ownElement == 3) {
 					if (symbol == "X") {
+						Game.wins++;
 						game.gameBoard.footerButton.Text = "You Win! Click for menu.";
 					} else {
+						Game.losses++;
 						game.gameBoard.footerButton.Text = "Sorry, you lose! Click for menu.";
 					}
 					// Disable all blank buttons.

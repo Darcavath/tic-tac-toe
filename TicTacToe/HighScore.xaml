@@ -6,11 +6,15 @@
     <ContentPage.Content>
         <StackLayout Padding="5">
             <!-- Top display panel -->
-            <Label BackgroundColor="DeepSkyBlue"
+            <!--<Label BackgroundColor="DeepSkyBlue"
                    HorizontalOptions="CenterAndExpand"
                    Text="High Scores"
                    TextColor="White"
-                   FontSize="32" />
+                   FontSize="32" />-->
+            <Button BackgroundColor="DeepSkyBlue"
+                    FontSize="32"
+                    TextColor="White"
+		            Text="High Scores" />
 
             <Grid x:Name="scrollGrid"
                   RowSpacing="5"
@@ -32,7 +36,7 @@
 							
                     <Label x:Name="contentLabel"
                        BackgroundColor="LightSlateGray"
-                       TextColor="DarkBlue"
+                       TextColor="White"
                        FontSize="32" />
 							
 				</ScrollView>
@@ -41,9 +45,9 @@
 
             <!-- Return button -->
             <Button BackgroundColor="DeepSkyBlue"
-                    FontSize="48"
+                    FontSize="32"
                     TextColor="White"
-		            Text="Return"
+		            Text="Return to menu"
 					x:Name="returnButton"
 					Clicked="ReturnButtonClick" />
 
