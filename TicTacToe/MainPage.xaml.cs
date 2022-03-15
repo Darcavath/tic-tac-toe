@@ -25,8 +25,6 @@ namespace TicTacToe {
 
 			// Initialize.
 			Initialize();
-
-			//Content = game.titleScreen.Content;
 		}
 
 		//--------------------------------------------------------------------------------
@@ -59,9 +57,20 @@ namespace TicTacToe {
 
 			diffButton.Text = "Normal";
 
-			game.gameBoard.headerLeft.Text = $"Player: {Game.wins}";
+			game.gameBoard.headerLeft.Text = $"Player1: {Game.wins}";
 			game.gameBoard.headerMiddle.Text = $"Draws: {Game.draws}";
-			game.gameBoard.headerRight.Text = $"CPU: {Game.losses}";
+			if (game.numPlayers == 1) {
+				game.gameBoard.headerRight.Text = $"CPU: {Game.losses}";
+			} else {
+				game.gameBoard.headerRight.Text = $"Player2: {Game.losses}";
+			}
+
+			// Set number of players.
+			if (game.numPlayers == 1) {
+				vsButton.Text = "vs CPU";
+			} else if (game.numPlayers == 2) {
+				vsButton.Text = "vs Player2";
+			}
 			// Setup stacklayouts.
 			//game.titleScreen = new TitleScreen(this);
 			//game.highScore.InitializeHighScoreScreen(highScoreList, ButtonClick);
@@ -73,7 +82,7 @@ namespace TicTacToe {
 		public void PlayButtonClick(object sender, EventArgs e) {
 			if ((sender as Button).Equals(playButton)) {
 				game.gameActive = true;
-				Application.Current.MainPage = game.gameBoard;// new GameBoard(game);
+				Application.Current.MainPage = game.gameBoard;
 				//DisplayAlert("Something", "Message", "OK");
 
 				// Reset gameboard.
@@ -86,12 +95,16 @@ namespace TicTacToe {
 				int result = game.rnd.Next(0, 2);
 				// ** DEBUGGING **
 				if (result == 0) {
-					game.gameBoard.footerButton.Text = "Please make your move...";
+					game.gameBoard.footerButton.Text = "Player1, make your move...";
 					game.playerTurn = true;
 					return;
 				} else {
 					game.playerTurn = false;
-					game.gameBoard.CPUTurnAsync("O");
+					if (game.numPlayers == 2) {
+						game.gameBoard.footerButton.Text = "Player2, make your move...";
+					} else {
+						game.gameBoard.CPUTurnAsync("O");
+					}
 					return;
 				}
 
@@ -105,33 +118,57 @@ namespace TicTacToe {
 		// Handle Difficulty button.
 		//--------------------------------------------------------------------------------
 		public void DifficultyButtonClick(object sender, EventArgs e) {
-			// Change game difficulty.
-			if ((sender as Button).Equals(diffButton)) {
-				switch (game.difficulty) {
-					case 0:
-						game.difficulty = Difficulty.hard;
-						diffButton.Text = "Hard";
-						break;
-					case (Difficulty)1:
-						game.difficulty = Difficulty.expert;
-						diffButton.Text = "Expert";
-						break;
-					case (Difficulty)2:
-						game.difficulty = Difficulty.normal;
-						diffButton.Text = "Normal";
-						break;
-					default:
-						break;
+			if (game.numPlayers == 1) {
+				// Change game difficulty.
+				if ((sender as Button).Equals(diffButton)) {
+					switch (game.difficulty) {
+						case 0:
+							game.difficulty = Difficulty.hard;
+							diffButton.Text = "Hard";
+							break;
+						case (Difficulty)1:
+							game.difficulty = Difficulty.expert;
+							diffButton.Text = "Expert";
+							break;
+						case (Difficulty)2:
+							game.difficulty = Difficulty.normal;
+							diffButton.Text = "Normal";
+							break;
+						default:
+							break;
+					}
 				}
 			}
 		}
 
 		//--------------------------------------------------------------------------------
-		// Handle CPU button.
+		// Handle vs button.
 		//--------------------------------------------------------------------------------
-		public void CPUButtonClick(object sender, EventArgs e) {
-			if ((sender as Button).Equals(cpuButton)) {
-				// ?
+		public void VSButtonClick(object sender, EventArgs e) {
+			if ((sender as Button).Equals(vsButton)) {
+				if (game.numPlayers == 1) {
+					game.numPlayers = 2;
+					vsButton.FontSize = 38;
+					vsButton.Text = "vs Player2";
+					diffButton.Text = "";
+				} else if (game.numPlayers == 2) {
+					game.numPlayers = 1;
+					vsButton.FontSize = 48;
+					vsButton.Text = "vs CPU";
+					switch (game.difficulty) {
+						case 0:
+							diffButton.Text = "Normal";
+							break;
+						case (Difficulty)1:
+							diffButton.Text = "Hard";
+							break;
+						case (Difficulty)2:
+							diffButton.Text = "Expert";
+							break;
+						default:
+							break;
+					}
+				}
 			}
 		}
 
@@ -140,8 +177,8 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void HSButtonClick(object sender, EventArgs e) {
 			if ((sender as Button).Equals(hsButton)) {
-				Application.Current.MainPage = new HighScore(game);
-				//Content = game.highScore.Content;
+				Application.Current.MainPage = game.highScore;
+				game.highScore.LoadScores();
 			}
 		}
 		//--------------------------------------------------------------------------------

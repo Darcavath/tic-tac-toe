@@ -32,8 +32,6 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void ButtonClick(object sender, EventArgs e) {
 			Button clickedButton = sender as Button;
-			Console.WriteLine("*** BUTTON CLICKED!!! ***");
-			// Handle gameboard clicks. --------------------------------------------------
 			// Iterate through button array for matching element.
 			if (game.playerTurn == true) {
 				for (int i = 0; i < 9; i++) {
@@ -42,7 +40,6 @@ namespace TicTacToe {
 						if (clickedButton.InputTransparent == false) {
 							buttons[i].Text = "X";
 							buttons[i].InputTransparent = true;
-
 							game.playerTurn = false;
 
 							// Disable all blank buttons so player cannot move again.
@@ -62,7 +59,7 @@ namespace TicTacToe {
 				if (CheckForWinner("X") == true) {
 					game.gameActive = false;
 					//Game.wins++;
-					game.gameBoard.headerLeft.Text = $"Player: {Game.wins}";
+					game.gameBoard.headerLeft.Text = $"{game.playerScore}";
 					//game.gameBoard.returnButton.IsEnabled = true;
 					return;
 				}
@@ -75,25 +72,69 @@ namespace TicTacToe {
 				}
 
 				// Control gameflow if active.
-				if (game.gameActive == true) {
+				if (game.gameActive == true && game.numPlayers == 1) {
 					if (game.playerTurn == false) {
 						// Initialize CPU move.
 						CPUTurnAsync("O");
 					}
 				}
 
-				
-			} else {
-				// returnButton only control, gameBoard only.
-				if (clickedButton.Equals(game.gameBoard.footerButton)) {
-					if (clickedButton.InputTransparent == false) {
-						Application.Current.MainPage = game.mainPage;
+				if (game.numPlayers == 2) {
+					game.gameBoard.footerButton.Text = "Player2, make your move...";
+				}
+			}
+
+			// Handle Player2 when active.
+			if (game.playerTurn == false && game.numPlayers == 2) {
+				for (int i = 0; i < 9; i++) {
+					if (clickedButton.Equals(buttons[i])) {
+						// Handle clickable?
+						if (clickedButton.InputTransparent == false) {
+							buttons[i].Text = "O";
+							buttons[i].InputTransparent = true;
+							game.playerTurn = true;
+
+							// Disable all blank buttons so player cannot move again.
+							foreach (Button button in buttons) {
+								if (button.InputTransparent.Equals(false)) {
+									button.InputTransparent.Equals(true);
+								}
+							}
+						} else {
+							// Here? Just leave.
+							return;
+						}
 					}
+				}
+
+				// Check for player win.
+				if (CheckForWinner("O") == true) {
+					game.gameActive = false;
+					game.gameBoard.headerRight.Text = $"Player2: {Game.losses}";
 					return;
 				}
 
+				// Check for draw game.
+				if (game.gameActive == true && CheckForDraw() == true) {
+					game.gameActive = false;
+					game.playerTurn = false;
+					return;
+				}
+
+				if (game.numPlayers == 2) {
+					game.gameBoard.footerButton.Text = "Player1, make your move...";
+				}
+			}
+
+			// returnButton only control, gameBoard only.
+			if (clickedButton.Equals(game.gameBoard.footerButton)) {
+				if (clickedButton.InputTransparent == false) {
+					Application.Current.MainPage = game.mainPage;
+				}
 				return;
 			}
+
+			return;
 		}
 
 		//--------------------------------------------------------------------------------
@@ -231,7 +272,7 @@ namespace TicTacToe {
 			}
 
 			if (game.gameActive == true) {
-				game.gameBoard.footerButton.Text = "Please make your move...";
+				game.gameBoard.footerButton.Text = "Player1, make your move...";
 				game.playerTurn = true;
 			}
 		}
@@ -254,10 +295,19 @@ namespace TicTacToe {
 				if (ownElement == 3) {
 					if (symbol == "X") {
 						Game.wins++;
-						game.gameBoard.footerButton.Text = "You Win! Click for menu.";
+						game.playerScore = $"Player1: {Game.wins}";
+						if (game.numPlayers == 1) {
+							game.gameBoard.footerButton.Text = "You win! Click for menu.";
+						} else {
+							game.gameBoard.footerButton.Text = "Player1 wins! Click for menu.";
+						}
 					} else {
 						Game.losses++;
-						game.gameBoard.footerButton.Text = "Sorry, you lose! Click for menu.";
+						if (game.numPlayers == 1) {
+							game.gameBoard.footerButton.Text = "Sorry, you lose! Click for menu.";
+						} else {
+							game.gameBoard.footerButton.Text = "Player2 wins! Click for menu.";
+						}
 					}
 					// Disable all blank buttons.
 					for (int i = 0; i < 9; i++) {

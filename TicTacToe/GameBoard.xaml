@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="TicTacToe.GameBoard">
     <ContentPage.Content>
-        <StackLayout Padding="5">
+        <StackLayout Padding="{OnPlatform macOS=5, iOS='5,20,5,5'}">
             <!-- Grid for header -->
             <Grid HorizontalOptions="FillAndExpand">
 	            <Grid.RowDefinitions>
@@ -25,7 +25,6 @@
                 <Label x:Name="headerLeft"
                        x:FieldModifier="public"
 					   TextColor="White"
-                       Text="{Binding game.playerScore}"
                        FontSize="24"
                        HorizontalOptions="Start"
                        VerticalOptions="Center"
@@ -34,7 +33,6 @@
                 <Label x:Name="headerMiddle"
                        x:FieldModifier="public"
 					   TextColor="White"
-                       Text="Draw 0"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
@@ -43,7 +41,6 @@
                 <Label x:Name="headerRight"
                        x:FieldModifier="public"
 					   TextColor="White"
-                       Text="CPU 0"
                        FontSize="24"
                        HorizontalOptions="End"
                        VerticalOptions="Center"

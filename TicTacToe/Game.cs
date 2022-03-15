@@ -21,6 +21,7 @@ namespace TicTacToe {
 		public bool gameActive = false;
 		public bool loop = true;
 		public bool playerTurn = false;
+		public int numPlayers = 1;
 		public static int wins;
 		public string playerScore;
 		public static int losses;
@@ -48,7 +49,8 @@ namespace TicTacToe {
 			highScore = new HighScore(this);
 			gameBoard = new GameBoard(this);
 			wins = 0;
-			playerScore = $"Player: {wins}";
+			numPlayers = 1;
+			playerScore = $"Player1: {wins}";
 			losses = 0;
 			draws = 0;
 		}

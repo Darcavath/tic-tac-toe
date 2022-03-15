@@ -10,10 +10,11 @@ namespace TicTacToe {
 		
 		public HighScore(Game game) {
 			InitializeComponent();
-
 			this.game = game;
+		}
 
-			// ** Todo: Handle different platforms. **
+		public void LoadScores() {
+			// Load scores from score list to display in scrollview.
 			string tempString = "";
 			List<Score> objSortedList = game.highScoreList.OrderByDescending(o => o.data).ToList();
 			string jsonString = JsonSerializer.Serialize(objSortedList);
@@ -36,25 +37,14 @@ namespace TicTacToe {
 			}
 			tempString += $"{count} scores recorded.";
 			contentLabel.Text = tempString;
-			//			Label contentLabel = new Label {
-			//				//Text = jsonString,
-			//				Text = tempString,
-			//				FontSize = 32
-			//			};
-
-			Console.WriteLine("*** Should have read scores! ***");
+			Console.WriteLine($"contentLabel = {contentLabel.Text}");
 		}
 
 		public void ReturnButtonClick(object sender, EventArgs e) {
 			// Handle highscores. --------------------------------------------------------
 			if ((sender as Button).Equals(returnButton)) {
-				//Content = game.mainPage.Content;
-
 				Application.Current.MainPage = game.mainPage;// new GameBoard(game);
 			}
-			//if ((sender as Button).Equals(returnButton)) {
-			//	Content = ;
-			//}
 		}
 	}
 }

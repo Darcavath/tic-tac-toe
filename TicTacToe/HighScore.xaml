@@ -4,13 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="TicTacToe.HighScore">
     <ContentPage.Content>
-        <StackLayout Padding="5">
+        <StackLayout Padding="{OnPlatform macOS=5, iOS='5,20,5,5'}">
             <!-- Top display panel -->
-            <!--<Label BackgroundColor="DeepSkyBlue"
-                   HorizontalOptions="CenterAndExpand"
-                   Text="High Scores"
-                   TextColor="White"
-                   FontSize="32" />-->
             <Button BackgroundColor="DeepSkyBlue"
                     FontSize="32"
                     TextColor="White"

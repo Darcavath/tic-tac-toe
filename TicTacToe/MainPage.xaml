@@ -4,7 +4,7 @@
              x:Class="TicTacToe.MainPage"
 			 x:Name="MainTitlePage" >
     <ContentPage.Content>
-	    <StackLayout Padding="5">
+	    <StackLayout Padding="{OnPlatform macOS=5, iOS='5,20,5,5'}">
             <!-- Top display panel -->
             <Image Source="tic-tac-toe.png"/>
             <!-- Grid for the main menu -->
@@ -41,9 +41,8 @@
                         BackgroundColor="DeepSkyBlue"
                         FontSize="48"
                         TextColor="White"
-                        Text="CPU"
-						x:Name="cpuButton"
-						Clicked="CPUButtonClick" />
+						x:Name="vsButton"
+						Clicked="VSButtonClick" />
                 <Button Grid.Row="2"
                         Grid.Column="0"
                         BackgroundColor="DeepSkyBlue"
