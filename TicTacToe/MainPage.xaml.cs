@@ -37,7 +37,7 @@ namespace TicTacToe {
 			// Create or open error log.
 			if (!File.Exists(errorLogFile)) {
 				//File.Create(errorLogFile);
-				string message = $"{DateTime.Now.ToShortDateString()}: error log file el created.\n";
+				string message = $"{DateTime.Now.ToShortDateString()}: error log file created.\n";
 				File.WriteAllText(errorLogFile, message);
 			}
 
@@ -47,8 +47,6 @@ namespace TicTacToe {
 				game.highScoreList = JsonSerializer.Deserialize<List<Score>>(jsonString);
 			} else {
 				// Create highscores file.
-				//File.Create(fileName);
-
 				string message = $"{DateTime.Now.ToShortDateString()}: highscores file {fileName} created.\n";
 				File.WriteAllText(errorLogFile, message);
 			}
@@ -57,23 +55,12 @@ namespace TicTacToe {
 
 			diffButton.Text = "Normal";
 
-			game.gameBoard.headerLeft.Text = $"Player1: {Game.wins}";
-			game.gameBoard.headerMiddle.Text = $"Draws: {Game.draws}";
-			if (game.numPlayers == 1) {
-				game.gameBoard.headerRight.Text = $"CPU: {Game.losses}";
-			} else {
-				game.gameBoard.headerRight.Text = $"Player2: {Game.losses}";
-			}
-
 			// Set number of players.
 			if (game.numPlayers == 1) {
 				vsButton.Text = "vs CPU";
 			} else if (game.numPlayers == 2) {
 				vsButton.Text = "vs Player2";
 			}
-			// Setup stacklayouts.
-			//game.titleScreen = new TitleScreen(this);
-			//game.highScore.InitializeHighScoreScreen(highScoreList, ButtonClick);
 		}
 
 		//--------------------------------------------------------------------------------
@@ -89,6 +76,15 @@ namespace TicTacToe {
 				foreach (Button button in game.gameBoard.buttons) {
 					button.Text = "";
 					button.InputTransparent = false;
+				}
+
+				// Set initial header values.
+				game.gameBoard.headerLeft.Text = $"Player1: {Game.wins}";
+				game.gameBoard.headerMiddle.Text = $"Draws: {Game.draws}";
+				if (game.numPlayers == 1) {
+					game.gameBoard.headerRight.Text = $"CPU: {Game.losses}";
+				} else {
+					game.gameBoard.headerRight.Text = $"Player2: {Game.losses}";
 				}
 
 				// Select random first player.
@@ -110,8 +106,6 @@ namespace TicTacToe {
 
 
 			}
-
-			// More here...
 		}
 
 		//--------------------------------------------------------------------------------

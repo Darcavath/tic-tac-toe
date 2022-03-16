@@ -41,7 +41,6 @@ namespace TicTacToe {
 		}
 
 		public void ReturnButtonClick(object sender, EventArgs e) {
-			// Handle highscores. --------------------------------------------------------
 			if ((sender as Button).Equals(returnButton)) {
 				Application.Current.MainPage = game.mainPage;// new GameBoard(game);
 			}

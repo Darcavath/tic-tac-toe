@@ -32,6 +32,12 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void ButtonClick(object sender, EventArgs e) {
 			Button clickedButton = sender as Button;
+
+			// returnButton only control, gameBoard only.
+			if (clickedButton.Equals(game.gameBoard.footerButton) && game.gameActive == true) {
+				return;
+			}
+
 			// Iterate through button array for matching element.
 			if (game.playerTurn == true) {
 				for (int i = 0; i < 9; i++) {
@@ -127,7 +133,7 @@ namespace TicTacToe {
 			}
 
 			// returnButton only control, gameBoard only.
-			if (clickedButton.Equals(game.gameBoard.footerButton)) {
+			if (clickedButton.Equals(game.gameBoard.footerButton) && game.gameActive == false) {
 				if (clickedButton.InputTransparent == false) {
 					Application.Current.MainPage = game.mainPage;
 				}
@@ -153,8 +159,7 @@ namespace TicTacToe {
 
 			// Display delay for CPU turn.
 			game.gameBoard.footerButton.Text = "Please wait...";
-			await Task.Delay(2000);
-			//Thread.Sleep(2000);
+			await Task.Delay(1000);
 
 			// Move determined by difficulty.
 			int diffNumber = 0;
@@ -182,16 +187,10 @@ namespace TicTacToe {
 								// Code here.
 								ownElement++;
 							}
-							//if (game.gameBoard.positionButton[elementInt].Text == symbol) {
-							//	ownElement++;
-							//}
 							// Select potential move.
 							if (buttons[elementInt].Text == "") {
 								winningPosition = elementInt;
 							}
-							//	if (game.gameBoard.positionButton[elementInt].Text == "") {
-							//	winningPosition = elementInt;
-							//}
 						}
 						// Make move and return.
 						if (ownElement == 2 && winningPosition != -1) {
