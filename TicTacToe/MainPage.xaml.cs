@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using Xamarin.Forms;
 using System.Linq;
-using System.Threading;
 
 namespace TicTacToe {
 	public partial class MainPage : ContentPage {
-		public Game game;// = new Game();
-		//public TitleScreen titleScreen;
+		public Game game;
 		
-		//public bool playerTurn = false;
 		public string headerMessage = "";
 		public string footerMessage = "";
 		
@@ -32,11 +28,9 @@ namespace TicTacToe {
 		//--------------------------------------------------------------------------------
 		public void Initialize() {
 			game = new Game(this);
-			//???
-			// ***** MOVE THIS!!! *****
+			
 			// Create or open error log.
 			if (!File.Exists(errorLogFile)) {
-				//File.Create(errorLogFile);
 				string message = $"{DateTime.Now.ToShortDateString()}: error log file created.\n";
 				File.WriteAllText(errorLogFile, message);
 			}
@@ -50,8 +44,6 @@ namespace TicTacToe {
 				string message = $"{DateTime.Now.ToShortDateString()}: highscores file {fileName} created.\n";
 				File.WriteAllText(errorLogFile, message);
 			}
-			// ************************
-
 
 			diffButton.Text = "Normal";
 
@@ -70,7 +62,6 @@ namespace TicTacToe {
 			if ((sender as Button).Equals(playButton)) {
 				game.gameActive = true;
 				Application.Current.MainPage = game.gameBoard;
-				//DisplayAlert("Something", "Message", "OK");
 
 				// Reset gameboard.
 				foreach (Button button in game.gameBoard.buttons) {
@@ -89,7 +80,6 @@ namespace TicTacToe {
 
 				// Select random first player.
 				int result = game.rnd.Next(0, 2);
-				// ** DEBUGGING **
 				if (result == 0) {
 					game.gameBoard.footerButton.Text = "Player1, make your move...";
 					game.playerTurn = true;
@@ -176,7 +166,7 @@ namespace TicTacToe {
 			}
 		}
 		//--------------------------------------------------------------------------------
-		// Handle Difficulty button.
+		// Handle Quit button.
 		//--------------------------------------------------------------------------------
 		public void QuitButtonClick(object sender, EventArgs e) {
 			if ((sender as Button).Equals(quitButton)) {
@@ -185,31 +175,26 @@ namespace TicTacToe {
 		}
 
 		//--------------------------------------------------------------------------------
-		// Close the game. ???
+		// Close the game.
 		//--------------------------------------------------------------------------------
 		public void CloseGame() {
 			// Write high scores file on quit.
 			string currentDateTime = DateTime.Now.ToShortDateString();
 			game.highScoreList.Add(new Score { date = currentDateTime, data = Game.wins });
-			// Sort ?
+			// Sort highScoreList.
 			List<Score> objSortedList = game.highScoreList.OrderByDescending(o => o.data).ToList();
-
 
 			string jsonString = JsonSerializer.Serialize(objSortedList);
 			File.WriteAllText(fileName, jsonString);
 			string errorMessage = "Highscores written to HighScore.json\n";
 			File.WriteAllText(errorLogFile, errorMessage);
 
-			// ** Fix this! ** Only for Mac, no exit on iOS!
-			Console.WriteLine("** Exit complete! **");
-			System.Diagnostics.Process.GetCurrentProcess().Kill();
-		}
-
-		void cpuButton_Clicked(System.Object sender, System.EventArgs e) {
-		}
-
-		public static implicit operator View(MainPage v) {
-			throw new NotImplementedException();
+			// Handle quitting on different platforms.
+			if (Device.RuntimePlatform == Device.iOS) {
+				DisplayAlert("Notice", "Highscores written, please press home to quit.", "Okay");
+			} else if (Device.RuntimePlatform == Device.macOS) {
+				System.Diagnostics.Process.GetCurrentProcess().Kill();
+			}
 		}
 	}
 }

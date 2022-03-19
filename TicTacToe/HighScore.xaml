@@ -22,11 +22,6 @@
                     <ColumnDefinition />
 			    </Grid.ColumnDefinitions>
 
-                <!--<ScrollView BindableLayout.ItemsSource="{Binding contentLabel}"
-                            VerticalOptions="FillAndExpand"
-                            Grid.Column="0"
-                            Grid.Row="0" >-->
-
 				<ScrollView VerticalOptions="FillAndExpand"
                             Grid.Column="0"
                             Grid.Row="0" >			

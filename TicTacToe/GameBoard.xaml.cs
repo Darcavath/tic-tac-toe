@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -64,9 +63,7 @@ namespace TicTacToe {
 				// Check for player win.
 				if (CheckForWinner("X") == true) {
 					game.gameActive = false;
-					//Game.wins++;
 					game.gameBoard.headerLeft.Text = $"{game.playerScore}";
-					//game.gameBoard.returnButton.IsEnabled = true;
 					return;
 				}
 
@@ -184,7 +181,6 @@ namespace TicTacToe {
 						foreach (int elementInt in element) {
 							// Count own elements.
 							if (buttons[elementInt].Text == symbol) {
-								// Code here.
 								ownElement++;
 							}
 							// Select potential move.
@@ -253,9 +249,7 @@ namespace TicTacToe {
 			// Check for CPU win.
 			if (CheckForWinner("O") == true) {
 				game.gameActive = false;
-				//Game.losses++;
 				headerRight.Text = $"CPU: {Game.losses}";
-				//game.gameBoard.returnButton.IsEnabled = true;
 			}
 
 			// Check for draw.

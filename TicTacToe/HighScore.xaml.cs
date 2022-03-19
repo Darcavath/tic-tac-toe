@@ -13,6 +13,9 @@ namespace TicTacToe {
 			this.game = game;
 		}
 
+		//--------------------------------------------------------------------------------
+		// Load scores and sort to display.
+		//--------------------------------------------------------------------------------
 		public void LoadScores() {
 			// Load scores from score list to display in scrollview.
 			string tempString = "";
@@ -37,12 +40,14 @@ namespace TicTacToe {
 			}
 			tempString += $"{count} scores recorded.";
 			contentLabel.Text = tempString;
-			Console.WriteLine($"contentLabel = {contentLabel.Text}");
 		}
 
+		//--------------------------------------------------------------------------------
+		// Handle Return button.
+		//--------------------------------------------------------------------------------
 		public void ReturnButtonClick(object sender, EventArgs e) {
 			if ((sender as Button).Equals(returnButton)) {
-				Application.Current.MainPage = game.mainPage;// new GameBoard(game);
+				Application.Current.MainPage = game.mainPage;
 			}
 		}
 	}
