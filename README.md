@@ -1,4 +1,4 @@
-A simple Tic-Tac-Toe game for MacOS/iOS written in C# using Visual Studio for Mac 2019 and Xamarin.Forms.
+## A simple Tic-Tac-Toe game for MacOS/iOS written in C# using Visual Studio for Mac 2019 and Xamarin.Forms.
 
 Project requirements met:
 - Create a dictionary or list, populate it with several values, retrieve at least one value, and use it in your program  
@@ -10,4 +10,4 @@ Project requirements met:
 - Use a LINQ query to retrieve information from a data structure (such as a list or array) or file
   * LINQ used to sort the scores from highest to lowest.
 - Analyze text and display information about it (ex: how many words in a paragraph)
-  * Analyzing text(scores) information displaying the number of scores recorded.
+  * Analyze scores(text) information and display the number of scores recorded.
